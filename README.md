@@ -1,0 +1,4 @@
+decimal
+=======
+
+Arbitrary precision class
