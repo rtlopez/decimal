@@ -2,117 +2,108 @@
 namespace RtLopez;
 
 /**
- * Bcmath implementation
+ * BCMath implementation
  * @author rtlopez
  */
 class DecimalBCMath extends Decimal
 {
-  protected function init($value, $prec)
-  {
-    $this->value = $this->convert($value);
-  }
-
   public function __toString()
   {
-    return (string)$this->value;
+    return $this->_trim($this->value);
   }
 
   public function add($op)
   {
-    $op = $this->convert($op);
-    $this->value = bcadd($this->value, $op, $this->prec + 1);
-    $this->value = $this->_round($this->value, $this->prec);
-    return $this;
+    $result = clone $this;
+    $op = $this->_normalize($op);
+    $result->value = $this->_round(bcadd($this->value, $op, $this->prec + 1), $this->prec);
+    return $result;
   }
 
   public function sub($op)
   {
-    $op = $this->convert($op);
-    $this->value = bcsub($this->value, $op, $this->prec + 1);
-    $this->value = $this->_round($this->value, $this->prec);
-    return $this;
+    $result = clone $this;
+    $op = $this->_normalize($op);
+    $result->value = $this->_round(bcsub($this->value, $op, $this->prec + 1), $this->prec);
+    return $result;
   }
 
   public function mul($op)
   {
-    $op = $this->convert($op);
-    $this->value = bcmul($this->value, $op, $this->prec + 1);
-    $this->value = $this->_round($this->value, $this->prec);
-    return $this;
+    $result = clone $this;
+    $op = $this->_normalize($op);
+    $result->value = $this->_round(bcmul($this->value, $op, $this->prec + 1), $this->prec);
+    return $result;
   }
 
   public function div($op)
   {
-    $op = $this->convert($op);
-    if($op == 0)
-    {
-      $e = new \Exception();
-      echo $e->getTraceAsString() . "\n";
-    }
-    $this->value = bcdiv($this->value, $op, $this->prec + 1);
-    $this->value = $this->_round($this->value, $this->prec);
-    return $this;
+    $result = clone $this;
+    $op = $this->_normalize($op);
+    if($op == 0) throw new DivisionByZeroException();
+    $result->value = $this->_round(bcdiv($this->value, $op, $this->prec + 1), $this->prec);
+    return $result;
   }
 
   public function mod($op)
   {
-    $op = $this->convert($op);
-    $this->value = bcmod($this->value, $op);
-    $this->value = $this->_round($this->value, $this->prec);
-    return $this;
+    $result = clone $this;
+    $op = $this->_normalize($op);
+    $result->value = $this->_round(bcmod($this->value, $op), $this->prec);
+    return $result;
   }
 
   public function pow($op)
   {
-    $op = $this->convert($op);
-    $this->value = bcpow($this->value, $op, $this->prec + 1);
-    $this->value = $this->_round($this->value, $this->prec);
-    return $this;
+    $result = clone $this;
+    $op = $this->_normalize($op);
+    $result->value = $this->_round(bcpow($this->value, $op, $this->prec + 1), $this->prec);
+    return $result;
   }
 
   public function sqrt()
   {
-    $this->value = bcsqrt($this->value, $this->prec + 1);
-    $this->value = $this->_round($this->value, $this->prec);
-    return $this;
+    $result = clone $this;
+    $result->value = $this->_round(bcsqrt($this->value, $this->prec + 1), $this->prec);
+    return $result;
   }
   
   public function round($prec = 0)
   {
-    $this->value = $this->_round($this->value, $prec);
-    $this->value = $this->_round($this->value, $this->prec);
-    return $this;
+    $result = clone $this;
+    $result->value = $this->_round($this->_round($this->value, $prec), $this->prec);
+    return $result;
   }
   
   public function ceil($prec = 0)
   {
-    $this->value = $this->_ceil($this->value, $prec);
-    $this->value = $this->_round($this->value, $this->prec);
-    return $this;
+    $result = clone $this;
+    $result->value = $this->_round($this->_ceil($this->value, $prec), $this->prec);
+    return $result;
   }
   
   public function floor($prec = 0)
   {
-    $this->value = $this->_floor($this->value, $prec);
-    $this->value = $this->_round($this->value, $this->prec);
-    return $this;
+    $result = clone $this;
+    $result->value = $this->_round($this->_floor($this->value, $prec), $this->prec);
+    return $result;
   }
   
   public function eq($op)
   {
-    $op = $this->convert($op);
+    $op = $this->_normalize($op);
     return bccomp($this->value, $op, $this->prec + 1) == 0;
   }
   
   public function lt($op)
   {
-    $op = $this->convert($op);
+    $op = $this->_normalize($op);
     return bccomp($this->value, $op, $this->prec + 1) < 0;
   }
 
   public function gt($op)
   {
-    $op = $this->convert($op);
+    $op = $this->_normalize($op);
     return bccomp($this->value, $op, $this->prec + 1) > 0;
   }
   
@@ -154,8 +145,8 @@ class DecimalBCMath extends Decimal
     }
   }
   
-  private function convert($op)
+  private function _normalize($op)
   {
-    return $op instanceof DecimalBCMath ? $op->value : $this->_round((string)$op, $this->prec);
+    return $op instanceof self ? $op->value : $this->_round((string)$op, $this->prec);
   }
 }

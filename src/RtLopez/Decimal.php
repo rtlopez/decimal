@@ -3,13 +3,29 @@ namespace RtLopez;
 
 abstract class Decimal
 {
+  private static $defaultImplementation = 'RtLopez\\DeciamlBCMath';
+  private static $defaultPrecision = 8;
+  
   protected $value;
   protected $prec;
 
   public function __construct($value = 0, $prec = null)
   {
-    $this->prec = $prec !== null ? $prec : 8;
-    $this->init($value, $this->prec);
+    if($value instanceof $this)
+    {
+      $this->prec = $prec !== null ? $prec : $value->prec;
+      $this->value = $value->value;
+    }
+    else if($value instanceof self)
+    {
+      $this->prec = $prec !== null ? $prec : $value->prec;
+      $this->value = (string)$value;
+    }
+    else
+    {
+      $this->prec = $prec !== null ? $prec : self::$defaultPrecision;
+      $this->value = (string)$value;
+    }
   }
 
   /**
@@ -18,27 +34,40 @@ abstract class Decimal
    * @param string $prec
    * @return Decimal
    */
-  public static function get($value = 0, $prec = null)
+  public static function make($value = 0, $prec = null)
   {
-    return new DecimalBCMath((string)$value, $prec);
+    return new self::$defaultImplementation($value, $prec);
+  }
+  
+  public static function setDefaultImplementation($className)
+  {
+    self::$defaultImplementation = $className;
+  }
+
+  public static function getDefaultImplementation()
+  {
+    return self::$defaultImplementation;
+  }
+
+  public static function setDefaultPrecision($precision)
+  {
+    self::$defaultPrecision = $precision;
+  }
+  
+  public static function getDefaultPrecision()
+  {
+    return self::$defaultPrecision;
+  }
+
+  protected function normalize($value)
+  {
+    return $value;
   }
   
   public function format($prec = null)
   {
-    return '' . Decimal::get($this, $prec);
+    return '' . Decimal::make($this, $prec);
   }
-  
-  public function value()
-  {
-    return $this->value;
-  }
-  
-  final public function toFloat()
-  {
-    return (float)(string)$this;
-  }
-  
-  abstract protected function init($value, $prec);
   
   abstract public function __toString();
   
@@ -70,14 +99,14 @@ abstract class Decimal
 
   public function min($op)
   {
-    $op = self::get($op, $this->prec);
-    return $this->lt($op) ? $this : $op;
+    $op = self::make($op, $this->prec);
+    return $me->lt($op) ? clone $this : $op;
   }
   
   public function max($op)
   {
-    $op = self::get($op, $this->prec);
-    return $this->gt($op) ? $this : $op;
+    $op = self::make($op, $this->prec);
+    return $this->gt($op) ? clone $this : $op;
   }
   
   final public function ne($op)
@@ -97,6 +126,15 @@ abstract class Decimal
   
   public function epsilon()
   {
-    return 0.5 / pow(10, $this->prec);
+    $half = self::make('0.5', $this->prec);
+    $factor = self::make('10', $this->prec)->pow($this->prec);
+    return $half->div($factor);
+    //return 0.5 / pow(10, $this->prec);
+  }
+  
+  protected function _trim($str)
+  {
+    if(!strpos($str, '.')) return $str;
+    return rtrim(rtrim($str, '0'), '.');
   }
 }

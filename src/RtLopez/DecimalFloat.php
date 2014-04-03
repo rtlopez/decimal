@@ -7,105 +7,116 @@ namespace RtLopez;
  */
 class DecimalFloat extends Decimal
 {
-  protected function init($value, $prec)
+  public function __construct($value = 0, $prec = null)
   {
-    $this->value = $this->convert($value);
+    parent::__construct($value, $prec);
+    $this->value = $this->_normalize($value);
   }
     
   public function __toString()
   {
-    return sprintf('%.' . $this->prec . 'f', $this->value);
+    return $this->_trim(sprintf('%.' . $this->prec . 'f', $this->value));
   }
 
   public function add($op)
   {
-    $op = $this->convert($op);
-    $this->value = round($this->value + $op, $this->prec);
-    return $this;
+    $result = clone $this;
+    $op = $this->_normalize($op);
+    $result->value = round($this->value + $op, $this->prec);
+    return $result;
   }
 
   public function sub($op)
   {
-    $op = $this->convert($op);
-    $this->value = round($this->value - $op, $this->prec);
-    return $this;
+    $result = clone $this;
+    $op = $this->_normalize($op);
+    $result->value = round($this->value - $op, $this->prec);
+    return $result;
   }
 
   public function mul($op)
   {
-    $op = $this->convert($op);
-    $this->value = round($this->value * $op, $this->prec);
-    return $this;
+    $result = clone $this;
+    $op = $this->_normalize($op);
+    $result->value = round($this->value * $op, $this->prec);
+    return $result;
   }
 
   public function div($op)
   {
-    $op = $this->convert($op);
-    $this->value = round($this->value / $op, $this->prec);
-    return $this;
+    $result = clone $this;
+    $op = $this->_normalize($op);
+    $result->value = round($this->value / $op, $this->prec);
+    return $result;
   }
 
   public function mod($op)
   {
-    $op = $this->convert($op);
-    $this->value = round($this->value % $op, $this->prec);
-    return $this;
+    $result = clone $this;
+    $op = $this->_normalize($op);
+    $result->value = round($this->value % $op, $this->prec);
+    return $result;
   }
 
   public function pow($op)
   {
-    $op = $this->convert($op);
-    $this->value = pow($this->value, round($op, $this->prec));
-    return $this;
+    $result = clone $this;
+    $op = $this->_normalize($op);
+    $result->value = pow($this->value, round($op, $this->prec));
+    return $result;
   }
 
   public function sqrt()
   {
-    $this->value = round(sqrt($this->value), $this->prec);
-    return $this;
+    $result = clone $this;
+    $result->value = round(sqrt($this->value), $this->prec);
+    return $result;
   }
   
   public function round($prec = 0)
   {
-    $this->value = round($this->value, $prec);
-    return $this;
+    $result = clone $this;
+    $result->value = round($this->value, $prec);
+    return $result;
   }
 
   public function ceil($prec = 0)
   {
+    $result = clone $this;
     $scale = pow(10, -$prec);
-    $this->value = ceil($this->value / $scale) * $scale;
-    return $this;
+    $result->value = ceil($this->value / $scale) * $scale;
+    return $result;
   }
 
   public function floor($prec = 0)
   {
+    $result = clone $this;
     $scale = pow(10, -$prec);
-    $this->value = floor($this->value / $scale) * $scale;
-    return $this;
+    $result->value = floor($this->value / $scale) * $scale;
+    return $result;
   }
   
   public function eq($op)
   {
-    $op = $this->convert($op);
-    $epsilon = $this->epsilon();
+    $op = $this->_normalize($op);
+    $epsilon = (float)(string)$this->epsilon();
     return abs($this->value - round($op, $this->prec)) < $epsilon;
   }
   
   public function lt($op)
   {
-    $op = $this->convert($op);
+    $op = $this->_normalize($op);
     return $this->value < round($op, $this->prec);
   }
 
   public function gt($op)
   {
-    $op = $this->convert($op);
+    $op = $this->_normalize($op);
     return $this->value > round($op, $this->prec);
   }
   
-  private function convert($op)
+  private function _normalize($op)
   {
-    return $op instanceof self ? $op->value() : round($op, $this->prec);
+    return $op instanceof self ? $op->value : round((string)$op, $this->prec);
   }
 }

@@ -1,2 +1,7 @@
 /vendor
 composer.lock
+
+.project
+.settings
+.buildpath
+.*.swp

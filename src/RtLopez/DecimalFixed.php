@@ -9,15 +9,17 @@ class DecimalFixed extends Decimal
 {
   private $scale;
   
-  protected function init($value, $prec)
+  public function __construct($value = 0, $prec = null)
   {
-    $this->scale = pow(10, $prec);
-    $this->value = (int)$this->convert($value);
+    parent::__construct($value, $prec);
+    $this->scale = pow(10, $this->prec);
+    $this->value = $this->_normalize($value);
   }
   
   public function __toString()
   {
-    if($this->value > 0)
+    $sign = '';
+    if($this->value >= 0)
     {
       $total = (int)floor($this->value / $this->scale);
       $factor = $this->value - $total * $this->scale;
@@ -26,106 +28,116 @@ class DecimalFixed extends Decimal
     {
       $total = (int)ceil($this->value / $this->scale);
       $factor = $total * $this->scale - $this->value;
+      $sign = '-';
     }
-    $sign = $this->value < 0 ? '-' : '';
-    return sprintf('%s%d.%0' . $this->prec . 'd', $sign, abs($total), $factor);
+    return $this->_trim(sprintf('%s%d.%0' . $this->prec . 'd', $sign, abs($total), $factor));
   }
 
   public function add($op)
   {
-    $op = $this->convert($op);
-    $this->value += $op;
-    return $this;
+    $result = clone $this;
+    $op = $this->_normalize($op);
+    $result->value += $op;
+    return $result;
   }
 
   public function sub($op)
   {
-    $op = $this->convert($op);
-    $this->value -= $op;
-    return $this;
+    $result = clone $this;
+    $op = $this->_normalize($op);
+    $result->value -= $op;
+    return $result;
   }
 
   public function mul($op)
   {
-    $op = $this->convert($op);
-    $this->value = (int)round($this->value * $op / $this->scale);
-    return $this;
+    $result = clone $this;
+    $op = $this->_normalize($op);
+    $result->value = (int)round($this->value * $op / $this->scale);
+    return $result;
   }
 
   public function div($op)
   {
-    $op = $this->convert($op);
-    if($op === 0) throw new InvalidArgumentException('Division by zero!'); 
-    $this->value = (int)round($this->value * $this->scale / $op);
-    return $this;
+    $result = clone $this;
+    $op = $this->_normalize($op);
+    if($op === 0) throw new DivisionByZeroException(); 
+    $result->value = (int)round($this->value * $this->scale / $op);
+    return $result;
   }
 
   public function mod($op)
   {
-    $op = $this->convert($op);
+    $result = clone $this;
+    $op = $this->_normalize($op);
     $op = $op > 0 ? floor($op / $this->scale) : ceil($op / $this->scale); 
     $op *= $this->scale;
-    $this->value = $this->value % $op;
-    return $this;
+    $result->value = $this->value % $op;
+    return $result;
   }
 
   public function pow($op)
   {
-    $op = $this->convert($op);
-    $this->value = (int)round(pow($this->value, round($op / $this->scale)));
-    return $this;
+    $result = clone $this;
+    $op = $this->_normalize($op);
+    $result->value = (int)round(pow($this->value, round($op / $this->scale)));
+    return $result;
   }
 
   public function sqrt()
   {
-    $this->value = (int)round(sqrt($this->value / $this->scale), $this->prec) * $this->scale;
-    return $this;
+    $result = clone $this;
+    $result->value = (int)round(sqrt($this->value / $this->scale), $this->prec) * $this->scale;
+    return $result;
   }
   
   public function round($prec = 0)
   {
-    $this->value = (int)round($this->value, $prec - $this->prec);
-    return $this;
+    $result = clone $this;
+    $result->value = (int)round($this->value, $prec - $this->prec);
+    return $result;
   }
 
   public function ceil($prec = 0)
   {
+    $result = clone $this;
     $scale = pow(10, $this->prec - $prec);
-    $this->value = ceil($this->value / $scale) * $scale;
-    return $this;
+    $result->value = ceil($this->value / $scale) * $scale;
+    return $result;
   }
 
   public function floor($prec = 0)
   {
+    $result = clone $this;
     $scale = pow(10, $this->prec - $prec);
-    $this->value = floor($this->value / $scale) * $scale;
-    return $this;
+    $result->value = floor($this->value / $scale) * $scale;
+    return $result;
   }
   
   public function eq($op)
   {
-    $op = $this->convert($op);
+    $op = $this->_normalize($op);
     return $this->value == $op;
   }
   
   public function lt($op)
   {
-    $op = $this->convert($op);
+    $op = $this->_normalize($op);
     return $this->value < $op;
   }
 
   public function gt($op)
   {
-    $op = $this->convert($op);
+    $op = $this->_normalize($op);
     return $this->value > $op;
   }
   
-  private function convert($op)
+  private function _normalize($op)
   {
     if($op instanceof DecimalFixed)
     {
-      $val = Decimal::get($op->value, 0)->mul($this->scale)->div($op->scale);
-      return $val->value;
+      //return Decimal::make($op->value, 0)->mul($this->scale)->div($op->scale)->value;
+      return (int)round($op->value * $this->scale / $op->scale);
     }
     else if($op instanceof Decimal)
     {
