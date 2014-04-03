@@ -1,8 +1,8 @@
 {
   "name": "rtlopez/decimal",
   "description": "Arbitrary precision class",
-  "keywords": ["queue", "transaction"],
-  "homepage": "http://github.com/CoderKungfu/php-queue",
+  "keywords": ["numbers", "decimal", "big decimal", "financial", "large numbers", "numeric"],
+  "homepage": "http://github.com/rtlopez/decimal",
   "authors": [{ 
     "name": "rtlopez"
   }],
