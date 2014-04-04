@@ -7,6 +7,12 @@ namespace RtLopez;
  */
 class DecimalBCMath extends Decimal
 {
+  public function __construct($value = 0, $prec = null)
+  {
+    parent::__construct($value, $prec);
+    $this->value = $this->_normalize($value);
+  }
+  
   public function __toString()
   {
     return $this->_trim($this->value);
@@ -56,7 +62,7 @@ class DecimalBCMath extends Decimal
   public function pow($op)
   {
     $result = clone $this;
-    $op = $this->_normalize($op);
+    $op = round($this->_normalize($op));
     $result->value = $this->_round(bcpow($this->value, $op, $this->prec + 1), $this->prec);
     return $result;
   }

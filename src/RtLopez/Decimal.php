@@ -3,7 +3,7 @@ namespace RtLopez;
 
 abstract class Decimal
 {
-  private static $defaultImplementation = 'RtLopez\\DeciamlBCMath';
+  private static $defaultImplementation = 'RtLopez\\DecimalBCMath';
   private static $defaultPrecision = 8;
   
   protected $value;
@@ -26,6 +26,7 @@ abstract class Decimal
       $this->prec = $prec !== null ? $prec : self::$defaultPrecision;
       $this->value = (string)$value;
     }
+    if($this->prec < 0) throw new \RuntimeException('precision can not be negative');
   }
 
   /**
@@ -64,9 +65,49 @@ abstract class Decimal
     return $value;
   }
   
-  public function format($prec = null)
+  public function format($prec = null, $dec_point = '.' , $thousands_sep = ' ', $with_dec_zero = true)
   {
-    return '' . Decimal::make($this, $prec);
+    $prec = $prec !== null ? $prec : $this->prec;
+    $str = (string)$this->round($prec);
+    
+    // extract parts
+    $parts = explode('.', $str);
+    $ints = $parts[0];
+    $decs = ''. @$parts[1];
+    
+    // extract sign
+    $sign = '';
+    if($ints[0] == '-')
+    {
+      $ints = substr($ints, 1);
+      $sign = '-';
+    }
+    
+    // format integer part
+    $int_len = strlen($ints);
+    $int_seps = (int)floor($int_len / 3);
+    $int_total = $int_len + $int_seps;
+    $int_str = str_repeat($thousands_sep, $int_total);
+    for($i = $int_len - 1, $j = $int_total - 1; $i >= 0; $j--, $i--)
+    {
+      $c = $ints[$i];
+      $int_str[$j] = $c;
+      if(($int_len - $i) % 3 == 0) $j--;
+    }
+    
+    // format decimal part
+    $dec_len = strlen($decs);
+    $dec_str = str_repeat('0', $prec);
+    for($i = 0; $i < $dec_len; $i++)
+    {
+      $dec_str[$i] = $decs[$i];
+    }
+    
+    // connect all parts
+    $number = $sign . trim($int_str . $dec_point . $dec_str);
+    if($with_dec_zero) return $number;
+    
+    return $this->_trim($number);
   }
   
   abstract public function __toString();
@@ -99,13 +140,15 @@ abstract class Decimal
 
   public function min($op)
   {
-    $op = self::make($op, $this->prec);
-    return $me->lt($op) ? clone $this : $op;
+    $class = get_class($this);
+    $op = new $class($op, $this->prec);
+    return $this->lt($op) ? clone $this : $op;
   }
   
   public function max($op)
   {
-    $op = self::make($op, $this->prec);
+    $class = get_class($this);
+    $op = new $class($op, $this->prec);
     return $this->gt($op) ? clone $this : $op;
   }
   
@@ -126,10 +169,17 @@ abstract class Decimal
   
   public function epsilon()
   {
-    $half = self::make('0.5', $this->prec);
-    $factor = self::make('10', $this->prec)->pow($this->prec);
+    $class = get_class($this);
+    $half = new $class('0.5', $this->prec);
+    $factor = (new $class('10', $this->prec))->pow($this->prec);
     return $half->div($factor);
-    //return 0.5 / pow(10, $this->prec);
+  }
+
+  public function abs()
+  {
+    $class = get_class($this);
+    $zero = new $class('0', $this->prec);
+    return $this->gt($zero) ? clone $this : $zero->sub($this);
   }
   
   protected function _trim($str)

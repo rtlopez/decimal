@@ -9,17 +9,13 @@ class MathTest extends \PHPUnit_Framework_TestCase
     'RtLopez\\DecimalFixed',
   );
   
-  private static $_precs = array(
-    0, 1, 2, 4, 8
-  );
-  
   public function providerAddIntegers()
   {
     $result = array();
-    
+    $precs = array(0, 1, 2, 4, 8);
     foreach(self::$_classes as $class)
     {
-      foreach(self::$_precs as $prec)
+      foreach($precs as $prec)
       {
         $result[] = array($class, $prec,   0,   0,  '0');
         $result[] = array($class, $prec,   1,   0,  '1');
@@ -36,17 +32,50 @@ class MathTest extends \PHPUnit_Framework_TestCase
   /**
    * @dataProvider providerAddIntegers
    */
-  public function testAddIntegers($class, $prec, $lhs, $rhs, $exp1)
+  public function testAddIntegers($class, $prec, $lhs, $rhs, $exp)
   {
-    $exp2 = $lhs + $rhs;
     $l = new $class($lhs, $prec);
     $r = new $class($rhs, $prec);
     $res1 = $l->add($r);
     $res2 = $r->add($l);
-    
-    $this->assertEquals($exp1, ''.$res1);
-    $this->assertEquals($exp1, ''.$res2);
-    $this->assertEquals($exp2, ''.$res1);
-    $this->assertEquals($exp2, ''.$res2);
+    $res3 = $l->add($rhs);
+
+    $this->assertEquals($exp, (string)($lhs + $rhs));
+    $this->assertEquals($exp, ''.$res1);
+    $this->assertEquals($exp, ''.$res2);
+    $this->assertEquals($exp, ''.$res3);
+  }
+
+  public function providerAddFloats()
+  {
+    $result = array();
+    foreach(self::$_classes as $class)
+    {
+      $result[] = array($class,   0.0,   0.0,  '0');
+      $result[] = array($class,   0.1,   0.0,  '0.1');
+      $result[] = array($class,   0.1,   1.0,  '1.1');
+      $result[] = array($class,   0.0,   0.1,  '0.1');
+      $result[] = array($class,  -1.0,   1.0,  '0');
+      $result[] = array($class,   1.0,  -1.0,  '0');
+      $result[] = array($class,   2.0,   2.0,  '4');
+    }
+    return $result;
+  }
+  
+  /**
+   * @dataProvider providerAddFloats
+   */
+  public function testAddFloats($class, $lhs, $rhs, $exp)
+  {
+    $l = new $class($lhs, 2);
+    $r = new $class($rhs, 2);
+    $res1 = $l->add($r);
+    $res2 = $r->add($l);
+    $res3 = $l->add($rhs);
+
+    $this->assertEquals($exp, (string)($lhs + $rhs));
+    $this->assertEquals($exp, ''.$res1);
+    $this->assertEquals($exp, ''.$res2);
+    $this->assertEquals($exp, ''.$res3);
   }
 }

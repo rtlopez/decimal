@@ -134,18 +134,14 @@ class DecimalFixed extends Decimal
   
   private function _normalize($op)
   {
-    if($op instanceof DecimalFixed)
+    if($op instanceof self)
     {
       //return Decimal::make($op->value, 0)->mul($this->scale)->div($op->scale)->value;
       return (int)round($op->value * $this->scale / $op->scale);
     }
-    else if($op instanceof Decimal)
-    {
-      return (int)round((string)$op * $this->scale);
-    }
     else
     {
-      return (int)round($op * $this->scale);
+      return (int)round((string)$op * $this->scale);
     }
   }
 }
