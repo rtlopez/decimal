@@ -60,8 +60,9 @@ class DecimalFixed extends Decimal
   public function div($op)
   {
     $result = clone $this;
+    $result->value = 0;
+    if($result->eq($op)) throw new ArithmeticException('Division by zero');
     $op = $this->_normalize($op);
-    if($op === 0) throw new DivisionByZeroException(); 
     $result->value = (int)round($this->value * $this->scale / $op);
     return $result;
   }
@@ -69,18 +70,21 @@ class DecimalFixed extends Decimal
   public function mod($op)
   {
     $result = clone $this;
+    $result->value = 0;
+    if($result->eq($op)) throw new ArithmeticException('Division by zero');
     $op = $this->_normalize($op);
     $op = $op > 0 ? floor($op / $this->scale) : ceil($op / $this->scale); 
-    $op *= $this->scale;
-    $result->value = $this->value % $op;
-    return $result;
+    $result->value = $this->value % ($op * $this->scale);
+    return $result->value > 0 ? $result->floor(0) : $result->ceil(0);
   }
 
   public function pow($op)
   {
     $result = clone $this;
+    $result->value = 0;
+    //if($result->gt($op)) throw new ArithmeticException('Exponent must be greather or equal zero: ' . json_encode($op));
     $op = $this->_normalize($op);
-    $result->value = (int)round(pow($this->value, round($op / $this->scale)));
+    $result->value = (int)round(pow($this->value / $this->scale, round($op / $this->scale, $this->prec)), $this->prec) * $this->scale;
     return $result;
   }
 

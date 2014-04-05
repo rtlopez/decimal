@@ -45,6 +45,8 @@ class DecimalFloat extends Decimal
   public function div($op)
   {
     $result = clone $this;
+    $result->value = 0.0;
+    if($result->eq($op)) throw new ArithmeticException('Division by zero');
     $op = $this->_normalize($op);
     $result->value = round($this->value / $op, $this->prec);
     return $result;
@@ -53,6 +55,8 @@ class DecimalFloat extends Decimal
   public function mod($op)
   {
     $result = clone $this;
+    $result->value = 0.0;
+    if($result->eq($op)) throw new ArithmeticException('Division by zero');
     $op = $this->_normalize($op);
     $result->value = round($this->value % $op, $this->prec);
     return $result;
@@ -61,6 +65,8 @@ class DecimalFloat extends Decimal
   public function pow($op)
   {
     $result = clone $this;
+    $result->value = 0.0;
+    //if($result->gt($op)) throw new ArithmeticException('Exponent must be greather or equal zero: ' . json_encode($op));
     $op = $this->_normalize($op);
     $result->value = pow($this->value, round($op, $this->prec));
     return $result;
@@ -99,8 +105,7 @@ class DecimalFloat extends Decimal
   public function eq($op)
   {
     $op = $this->_normalize($op);
-    $epsilon = (float)(string)$this->epsilon();
-    return abs($this->value - round($op, $this->prec)) < $epsilon;
+    return abs($this->value - round($op, $this->prec)) < $this->_epsilon();
   }
   
   public function lt($op)
@@ -113,6 +118,11 @@ class DecimalFloat extends Decimal
   {
     $op = $this->_normalize($op);
     return $this->value > round($op, $this->prec);
+  }
+  
+  private function _epsilon()
+  {
+    return 0.5 / pow(10, $this->prec);
   }
   
   private function _normalize($op)

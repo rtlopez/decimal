@@ -45,8 +45,9 @@ class DecimalBCMath extends Decimal
   public function div($op)
   {
     $result = clone $this;
+    $result->value = '0';
+    if($result->eq($op)) throw new ArithmeticException('Division by zero');
     $op = $this->_normalize($op);
-    if($op == 0) throw new DivisionByZeroException();
     $result->value = $this->_round(bcdiv($this->value, $op, $this->prec + 1), $this->prec);
     return $result;
   }
@@ -54,6 +55,8 @@ class DecimalBCMath extends Decimal
   public function mod($op)
   {
     $result = clone $this;
+    $result->value = '0';
+    if($result->eq($op)) throw new ArithmeticException('Division by zero');
     $op = $this->_normalize($op);
     $result->value = $this->_round(bcmod($this->value, $op), $this->prec);
     return $result;
@@ -62,8 +65,12 @@ class DecimalBCMath extends Decimal
   public function pow($op)
   {
     $result = clone $this;
-    $op = round($this->_normalize($op));
-    $result->value = $this->_round(bcpow($this->value, $op, $this->prec + 1), $this->prec);
+    $result->value = '0';
+    //if($result->gt($op)) throw new ArithmeticException('Exponent must be greather or equal zero: ' . json_encode($op));
+    $op = $this->_normalize($op);
+    $result->value = $op;
+    //if((string)$result !== (string)$result->round(0)) throw new ArithmeticException('Exponent must be integer: ' . json_encode(array($op))); 
+    $result->value = $this->_round(bcpow($this->value, (int)$op, $this->prec + 1), $this->prec);
     return $result;
   }
 
