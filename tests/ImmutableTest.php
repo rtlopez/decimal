@@ -5,8 +5,8 @@ class ImmutableTest extends \PHPUnit_Framework_TestCase
 {
   private static $_classes = array(
     'RtLopez\\DecimalBCMath',
-    'RtLopez\\DecimalFloat',
-    'RtLopez\\DecimalFixed',
+    //'RtLopez\\DecimalFloat',
+    //'RtLopez\\DecimalFixed',
   );
   
   public function providerImmutableCallsAndArgs()

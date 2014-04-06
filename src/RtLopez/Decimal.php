@@ -6,7 +6,14 @@ abstract class Decimal
   private static $defaultImplementation = 'RtLopez\\DecimalBCMath';
   private static $defaultPrecision = 8;
   
+  /**
+   * @var internal value
+   */
   protected $value;
+  
+  /**
+   * @var int precision
+   */
   protected $prec;
 
   public function __construct($value = 0, $prec = null)
@@ -16,15 +23,15 @@ abstract class Decimal
       $this->prec = $prec !== null ? $prec : $value->prec;
       $this->value = $value->value;
     }
-    else if($value instanceof self)
+    else if($value instanceof Decimal)
     {
       $this->prec = $prec !== null ? $prec : $value->prec;
-      $this->value = (string)$value;
+      $this->value = $this->_normalize($value);
     }
     else
     {
       $this->prec = $prec !== null ? $prec : self::$defaultPrecision;
-      $this->value = (string)$value;
+      $this->value = $this->_normalize($value);
     }
     if($this->prec < 0) throw new \RuntimeException('precision can not be negative');
   }
@@ -33,11 +40,27 @@ abstract class Decimal
    * Decimal factory method 
    * @param number $value
    * @param string $prec
-   * @return Decimal
+   * @return \RtLopez\Decimal
    */
-  public static function make($value = 0, $prec = null)
+  public static function create($value = 0, $prec = null)
   {
     return new self::$defaultImplementation($value, $prec);
+  }
+
+  /**
+   * Make the same type obkect
+   * @param number $value
+   * @param string $prec
+   * @return \RtLopez\Decimal
+   */
+  public function same($value = 0, $prec = null)
+  {
+    if($value instanceof $this && $value->prec == $this->prec && ($prec === null || $value->prec == $prec))
+    {
+      return $value;
+    }
+    $class = get_class($this);
+    return new $class($value, $prec);
   }
   
   public static function setDefaultImplementation($className)
@@ -60,15 +83,18 @@ abstract class Decimal
     return self::$defaultPrecision;
   }
 
-  protected function normalize($value)
+  /**
+   * convert object to string
+   */
+  public function __toString()
   {
-    return $value;
+    return $this->toString();
   }
   
   public function format($prec = null, $dec_point = '.' , $thousands_sep = ' ', $with_dec_zero = true)
   {
     $prec = $prec !== null ? $prec : $this->prec;
-    $str = (string)$this->round($prec);
+    $str = $this->round($prec)->toString();
     
     // extract parts
     $parts = explode('.', $str);
@@ -110,81 +136,178 @@ abstract class Decimal
     return $this->_trim($number);
   }
   
-  abstract public function __toString();
+  /**
+   * remove trailing spaces
+   * @param string $str
+   * @return string
+   */
+  protected function _trim($str)
+  {
+    if(!strpos($str, '.')) return $str;
+    return rtrim(rtrim($str, '0'), '.');
+  }
   
-  abstract public function add($op);
+  public function add($op)
+  {
+    $dst = clone $this;
+    $dst->value = $this->_round($this->_add($this->same($op, $this->prec)));
+    return $dst;
+  }
   
-  abstract public function sub($op);
+  public function sub($op)
+  {
+    $dst = clone $this;
+    $dst->value = $this->_round($this->_sub($this->same($op, $this->prec)));
+    return $dst;
+  }
   
-  abstract public function mul($op);
+  public function mul($op)
+  {
+    $dst = clone $this;
+    $dst->value = $this->_round($this->_mul($this->same($op, $this->prec)));
+    return $dst;
+  }
   
-  abstract public function div($op);
+  public function div($op)
+  {
+    $dst = clone $this;
+    $dst->value = '0';
+    if($dst->eq($op)) throw new ArithmeticException(sprintf('Division by zero (%s)', json_encode($op)));
+    $dst->value = $this->_round($this->_div($this->same($op, $this->prec)));
+    return $dst;
+  }
   
-  abstract public function mod($op);
+  public function mod($op)
+  {
+    $dst = clone $this;
+    $dst->value = '0';
+    if($dst->eq($op)) throw new ArithmeticException(sprintf('Division by zero (%s)', json_encode($op)));
+    $dst->value = $this->_round($this->_mod($this->same($op, $this->prec)));
+    return $dst;
+  }
   
-  abstract public function pow($op);
+  public function pow($op)
+  {
+    $dst = clone $this;
+    $op = $this->same($op, $this->prec);
+    //$dst->value = '0';
+    //if($dst->gt($op)) throw new ArithmeticException('Exponent must be greather or equal zero: ' . json_encode($op));
+    if((string)$op !== (string)$op->round(0)) throw new ArithmeticException('Exponent must be integer: ' . json_encode(array($op)));
+    $dst->value = $this->_round($this->_pow($op));
+    return $dst;
+  }
   
-  abstract public function sqrt();
+  public function sqrt()
+  {
+    $dst = clone $this;
+    $dst->value = $this->_round($this->_sqrt());
+    return $dst;
+  }
   
-  abstract public function round($prec = 0);
+  public function round($prec = 0)
+  {
+    $dst = clone $this;
+    $dst->value = $this->_round($this->value, $prec);
+    return $dst;
+  }
 
-  abstract public function ceil($prec = 0);
+  public function ceil($prec = 0)
+  {
+    $dst = clone $this;
+    $dst->value = $this->_round($this->_ceil($this->value, $prec));
+    return $dst;
+  }
   
-  abstract public function floor($prec = 0);
-  
-  abstract public function eq($op);
-  
-  abstract public function lt($op);
-  
-  abstract public function gt($op);
+  public function floor($prec = 0)
+  {
+    $dst = clone $this;
+    $dst->value = $this->_round($this->_floor($this->value, $prec));
+    return $dst;
+  }
 
+  public function eq($op)
+  {
+    return $this->_eq(self::same($op, $this->prec));
+  }
+  
+  public function lt($op)
+  {
+    return $this->_lt(self::same($op, $this->prec));
+  }
+  
+  public function gt($op)
+  {
+    return $this->_gt(self::same($op, $this->prec));
+  }
+  
   public function min($op)
   {
-    $class = get_class($this);
-    $op = new $class($op, $this->prec);
+    $op = $this->same($op, $this->prec);
     return $this->lt($op) ? clone $this : $op;
   }
   
   public function max($op)
   {
-    $class = get_class($this);
-    $op = new $class($op, $this->prec);
+    $op = $this->same($op, $this->prec);
     return $this->gt($op) ? clone $this : $op;
   }
   
-  final public function ne($op)
+  public function ne($op)
   {
     return !$this->eq($op);
   }
   
-  final public function ge($op)
+  public function ge($op)
   {
     return !$this->lt($op);
   } 
 
-  final public function le($op)
+  public function le($op)
   {
     return !$this->gt($op);
   }
   
   public function epsilon()
   {
-    $class = get_class($this);
-    $half = new $class('0.5', $this->prec);
-    $factor = (new $class('10', $this->prec))->pow($this->prec);
+    $half = $this->same('0.5', $this->prec);
+    $factor = $this->same('10', $this->prec)->pow($this->prec);
     return $half->div($factor);
   }
 
   public function abs()
   {
-    $class = get_class($this);
-    $zero = new $class('0', $this->prec);
-    return $this->gt($zero) ? clone $this : $zero->sub($this);
+    return $this->gt(0) ? clone $this : $this->mul(-1);
   }
+
+  abstract protected function _add(Decimal $op);
   
-  protected function _trim($str)
-  {
-    if(!strpos($str, '.')) return $str;
-    return rtrim(rtrim($str, '0'), '.');
-  }
+  abstract protected function _sub(Decimal $op);
+  
+  abstract protected function _mul(Decimal $op);
+  
+  abstract protected function _div(Decimal $op);
+  
+  abstract protected function _mod(Decimal $op);
+  
+  abstract protected function _pow(Decimal $op);
+  
+  abstract protected function _sqrt();
+  
+
+  abstract protected function _normalize($value);
+  
+  abstract protected function _round($value, $prec = null);
+  
+  abstract protected function _ceil($value, $prec);
+  
+  abstract protected function _floor($value, $prec);
+  
+
+  abstract protected function _eq(Decimal $op);
+  
+  abstract protected function _lt(Decimal $op);
+  
+  abstract protected function _gt(Decimal $op);
+  
+  abstract public function toString();
 }

@@ -7,128 +7,71 @@ namespace RtLopez;
  */
 class DecimalBCMath extends Decimal
 {
-  public function __construct($value = 0, $prec = null)
-  {
-    parent::__construct($value, $prec);
-    $this->value = $this->_normalize($value);
-  }
-  
-  public function __toString()
+  public function toString()
   {
     return $this->_trim($this->value);
   }
 
-  public function add($op)
+  protected function _add(Decimal $op)
   {
-    $result = clone $this;
-    $op = $this->_normalize($op);
-    $result->value = $this->_round(bcadd($this->value, $op, $this->prec + 1), $this->prec);
-    return $result;
+    return bcadd($this->value, $op->value, $this->prec + 1);
   }
 
-  public function sub($op)
+  protected function _sub(Decimal $op)
   {
-    $result = clone $this;
-    $op = $this->_normalize($op);
-    $result->value = $this->_round(bcsub($this->value, $op, $this->prec + 1), $this->prec);
-    return $result;
+    return bcsub($this->value, $op->value, $this->prec + 1);
   }
 
-  public function mul($op)
+  protected function _mul(Decimal $op)
   {
-    $result = clone $this;
-    $op = $this->_normalize($op);
-    $result->value = $this->_round(bcmul($this->value, $op, $this->prec + 1), $this->prec);
-    return $result;
+    return bcmul($this->value, $op->value, $this->prec + 1);
   }
 
-  public function div($op)
+  protected function _div(Decimal $op)
   {
-    $result = clone $this;
-    $result->value = '0';
-    if($result->eq($op)) throw new ArithmeticException('Division by zero');
-    $op = $this->_normalize($op);
-    $result->value = $this->_round(bcdiv($this->value, $op, $this->prec + 1), $this->prec);
-    return $result;
+    return bcdiv($this->value, $op->value, $this->prec + 1);
   }
 
-  public function mod($op)
+  protected function _mod(Decimal $op)
   {
-    $result = clone $this;
-    $result->value = '0';
-    if($result->eq($op)) throw new ArithmeticException('Division by zero');
-    $op = $this->_normalize($op);
-    $result->value = $this->_round(bcmod($this->value, $op), $this->prec);
-    return $result;
+    return bcmod($this->value, $op->value);
   }
 
-  public function pow($op)
+  protected function _pow(Decimal $op)
   {
-    $result = clone $this;
-    $result->value = '0';
-    //if($result->gt($op)) throw new ArithmeticException('Exponent must be greather or equal zero: ' . json_encode($op));
-    $op = $this->_normalize($op);
-    $result->value = $op;
-    //if((string)$result !== (string)$result->round(0)) throw new ArithmeticException('Exponent must be integer: ' . json_encode(array($op))); 
-    $result->value = $this->_round(bcpow($this->value, (int)$op, $this->prec + 1), $this->prec);
-    return $result;
+    return bcpow($this->value, (int)$op->value, $this->prec + 1);
   }
 
-  public function sqrt()
+  protected function _sqrt()
   {
-    $result = clone $this;
-    $result->value = $this->_round(bcsqrt($this->value, $this->prec + 1), $this->prec);
-    return $result;
+    return bcsqrt($this->value, $this->prec + 1);
   }
   
-  public function round($prec = 0)
+  protected function _eq(Decimal $op)
   {
-    $result = clone $this;
-    $result->value = $this->_round($this->_round($this->value, $prec), $this->prec);
-    return $result;
+    return bccomp($this->value, $op->value, $this->prec + 1) == 0;
   }
   
-  public function ceil($prec = 0)
+  protected function _lt(Decimal $op)
   {
-    $result = clone $this;
-    $result->value = $this->_round($this->_ceil($this->value, $prec), $this->prec);
-    return $result;
-  }
-  
-  public function floor($prec = 0)
-  {
-    $result = clone $this;
-    $result->value = $this->_round($this->_floor($this->value, $prec), $this->prec);
-    return $result;
-  }
-  
-  public function eq($op)
-  {
-    $op = $this->_normalize($op);
-    return bccomp($this->value, $op, $this->prec + 1) == 0;
-  }
-  
-  public function lt($op)
-  {
-    $op = $this->_normalize($op);
-    return bccomp($this->value, $op, $this->prec + 1) < 0;
+    return bccomp($this->value, $op->value, $this->prec + 1) < 0;
   }
 
-  public function gt($op)
+  protected function _gt(Decimal $op)
   {
-    $op = $this->_normalize($op);
-    return bccomp($this->value, $op, $this->prec + 1) > 0;
+    return bccomp($this->value, $op->value, $this->prec + 1) > 0;
   }
   
-  private function _round($number, $prec)
+  protected function _round($number, $prec = null)
   {
+    $prec = $prec !== null ? $prec : $this->prec;
     $positive = bccomp($number, '0', $this->prec + 1) >= 0;
     $fix = '0.' . str_repeat('0', $prec) . '5';
     $number = $positive ? bcadd($number, $fix, $prec + 1) : bcsub($number, $fix, $prec + 1);
     return bcadd($number, '0', $prec);
   }
 
-  private function _ceil($number, $prec)
+  protected function _ceil($number, $prec)
   {
     if(bccomp($number, '0', $this->prec + 1) >= 0)
     {
@@ -143,7 +86,7 @@ class DecimalBCMath extends Decimal
     }
   }
   
-  private function _floor($number, $prec)
+  protected function _floor($number, $prec)
   {
     if(bccomp($number, '0', $this->prec + 1) >= 0)
     {
@@ -158,7 +101,7 @@ class DecimalBCMath extends Decimal
     }
   }
   
-  private function _normalize($op)
+  protected function _normalize($op)
   {
     return $op instanceof self ? $op->value : $this->_round((string)$op, $this->prec);
   }

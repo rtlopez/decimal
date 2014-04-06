@@ -5,8 +5,8 @@ class MathTest extends \PHPUnit_Framework_TestCase
 {
   private static $_classes = array(
     'RtLopez\\DecimalBCMath',
-    'RtLopez\\DecimalFloat',
-    'RtLopez\\DecimalFixed',
+    //'RtLopez\\DecimalFloat',
+    //'RtLopez\\DecimalFixed',
   );
   
   public function providerAddIntegers()
@@ -215,6 +215,8 @@ class MathTest extends \PHPUnit_Framework_TestCase
       $result[] = array($class,     2,     0,    '1');
       $result[] = array($class,     3,     1,    '3');
       $result[] = array($class,     5,     2,   '25');
+      $result[] = array($class,     5,    -2, '0.04');
+      $result[] = array($class,    -5,    -2, '0.04');
       $result[] = array($class,    -5,     3, '-125');
       $result[] = array($class,    -7,     2,   '49');
       $result[] = array($class, '3.3',     3, '35.937');

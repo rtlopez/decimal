@@ -5,11 +5,11 @@ class FailureTest extends \PHPUnit_Framework_TestCase
 {
   private static $_classes = array(
     'RtLopez\\DecimalBCMath',
-    'RtLopez\\DecimalFloat',
-    'RtLopez\\DecimalFixed',
+    //'RtLopez\\DecimalFloat',
+    //'RtLopez\\DecimalFixed',
   );
 
-  public function providerDivisionByZero()
+  public function providerClasses()
   {
     $result = array();
     foreach(self::$_classes as $class)
@@ -20,7 +20,7 @@ class FailureTest extends \PHPUnit_Framework_TestCase
   }
   
   /**
-   * @dataProvider providerDivisionByZero
+   * @dataProvider providerClasses
    * @expectedException  RtLopez\ArithmeticException
    */
   public function testDivisionByZeroInteger($class)
@@ -30,7 +30,7 @@ class FailureTest extends \PHPUnit_Framework_TestCase
   }
 
   /**
-   * @dataProvider providerDivisionByZero
+   * @dataProvider providerClasses
    * @expectedException  RtLopez\ArithmeticException
    */
   public function testDivisionByZeroFloat($class)
@@ -40,12 +40,22 @@ class FailureTest extends \PHPUnit_Framework_TestCase
   }
 
   /**
-   * @dataProvider providerDivisionByZero
+   * @dataProvider providerClasses
    * @expectedException  RtLopez\ArithmeticException
    */
   public function testDivisionByZeroDecimal($class)
   {
     $foo = new $class(1, 1);
     $foo->div(new $class(0, 1)); 
+  }
+
+  /**
+   * @dataProvider providerClasses
+   * @expectedException  RtLopez\ArithmeticException
+   */
+  public function testPowExponentFraction($class)
+  {
+    $foo = new $class(1, 1);
+    $foo->pow(1.5); 
   }
 }
