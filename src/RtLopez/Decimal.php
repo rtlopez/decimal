@@ -150,21 +150,21 @@ abstract class Decimal
   public function add($op)
   {
     $dst = clone $this;
-    $dst->value = $this->_round($this->_add($this->same($op, $this->prec)));
+    $dst->value = $this->_fix($this->_add($this->same($op, $this->prec)));
     return $dst;
   }
   
   public function sub($op)
   {
     $dst = clone $this;
-    $dst->value = $this->_round($this->_sub($this->same($op, $this->prec)));
+    $dst->value = $this->_fix($this->_sub($this->same($op, $this->prec)));
     return $dst;
   }
   
   public function mul($op)
   {
     $dst = clone $this;
-    $dst->value = $this->_round($this->_mul($this->same($op, $this->prec)));
+    $dst->value = $this->_fix($this->_mul($this->same($op, $this->prec)));
     return $dst;
   }
   
@@ -173,7 +173,7 @@ abstract class Decimal
     $dst = clone $this;
     $dst->value = '0';
     if($dst->eq($op)) throw new ArithmeticException(sprintf('Division by zero (%s)', json_encode($op)));
-    $dst->value = $this->_round($this->_div($this->same($op, $this->prec)));
+    $dst->value = $this->_fix($this->_div($this->same($op, $this->prec)));
     return $dst;
   }
   
@@ -182,7 +182,7 @@ abstract class Decimal
     $dst = clone $this;
     $dst->value = '0';
     if($dst->eq($op)) throw new ArithmeticException(sprintf('Division by zero (%s)', json_encode($op)));
-    $dst->value = $this->_round($this->_mod($this->same($op, $this->prec)));
+    $dst->value = $this->_fix($this->_mod($this->same($op, $this->prec)));
     return $dst;
   }
   
@@ -193,14 +193,14 @@ abstract class Decimal
     //$dst->value = '0';
     //if($dst->gt($op)) throw new ArithmeticException('Exponent must be greather or equal zero: ' . json_encode($op));
     if((string)$op !== (string)$op->round(0)) throw new ArithmeticException('Exponent must be integer: ' . json_encode(array($op)));
-    $dst->value = $this->_round($this->_pow($op));
+    $dst->value = $this->_fix($this->_pow($op));
     return $dst;
   }
   
   public function sqrt()
   {
     $dst = clone $this;
-    $dst->value = $this->_round($this->_sqrt());
+    $dst->value = $this->_fix($this->_sqrt());
     return $dst;
   }
   
@@ -214,30 +214,30 @@ abstract class Decimal
   public function ceil($prec = 0)
   {
     $dst = clone $this;
-    $dst->value = $this->_round($this->_ceil($this->value, $prec));
+    $dst->value = $this->_ceil($this->value, $prec);
     return $dst;
   }
   
   public function floor($prec = 0)
   {
     $dst = clone $this;
-    $dst->value = $this->_round($this->_floor($this->value, $prec));
+    $dst->value = $this->_floor($this->value, $prec);
     return $dst;
   }
 
   public function eq($op)
   {
-    return $this->_eq(self::same($op, $this->prec));
+    return $this->_eq($this->same($op, $this->prec));
   }
   
   public function lt($op)
   {
-    return $this->_lt(self::same($op, $this->prec));
+    return $this->_lt($this->same($op, $this->prec));
   }
   
   public function gt($op)
   {
-    return $this->_gt(self::same($op, $this->prec));
+    return $this->_gt($this->same($op, $this->prec));
   }
   
   public function min($op)
@@ -308,6 +308,9 @@ abstract class Decimal
   abstract protected function _lt(Decimal $op);
   
   abstract protected function _gt(Decimal $op);
+
+  
+  abstract protected function _fix($value);
   
   abstract public function toString();
 }

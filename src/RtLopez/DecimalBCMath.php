@@ -64,6 +64,7 @@ class DecimalBCMath extends Decimal
   
   protected function _round($number, $prec = null)
   {
+    //TODO: negative precision
     $prec = $prec !== null ? $prec : $this->prec;
     $positive = bccomp($number, '0', $this->prec + 1) >= 0;
     $fix = '0.' . str_repeat('0', $prec) . '5';
@@ -99,6 +100,11 @@ class DecimalBCMath extends Decimal
       $fix = bcdiv('1', pow(10, $prec), $prec);
       return bcsub($number, $fix, $prec);
     }
+  }
+  
+  protected function _fix($value)
+  {
+    return $this->_round($value, $this->prec);
   }
   
   protected function _normalize($op)
