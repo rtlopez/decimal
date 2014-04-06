@@ -171,28 +171,25 @@ abstract class Decimal
   public function div($op)
   {
     $dst = clone $this;
-    $dst->value = '0';
-    if($dst->eq($op)) throw new ArithmeticException(sprintf('Division by zero (%s)', json_encode($op)));
-    $dst->value = $this->_fix($this->_div($this->same($op, $this->prec)));
+    $op = $this->same($op, $this->prec);
+    if($op->eq(0)) throw new ArithmeticException(sprintf('Division by zero (%s)', json_encode($op)));
+    $dst->value = $this->_fix($this->_div($op));
     return $dst;
   }
   
   public function mod($op)
   {
     $dst = clone $this;
-    $dst->value = '0';
-    if($dst->eq($op)) throw new ArithmeticException(sprintf('Division by zero (%s)', json_encode($op)));
-    $dst->value = $this->_fix($this->_mod($this->same($op, $this->prec)));
+    $op = $this->same($op, $this->prec)->truncate();
+    if($op->eq(0)) throw new ArithmeticException(sprintf('Division by zero (%s)', json_encode($op)));
+    $dst->value = $this->_fix($this->_mod($op));
     return $dst;
   }
   
   public function pow($op)
   {
     $dst = clone $this;
-    $op = $this->same($op, $this->prec);
-    //$dst->value = '0';
-    //if($dst->gt($op)) throw new ArithmeticException('Exponent must be greather or equal zero: ' . json_encode($op));
-    if((string)$op !== (string)$op->round(0)) throw new ArithmeticException('Exponent must be integer: ' . json_encode(array($op)));
+    $op = $this->same($op, $this->prec)->truncate();
     $dst->value = $this->_fix($this->_pow($op));
     return $dst;
   }
@@ -279,6 +276,11 @@ abstract class Decimal
     return $this->gt(0) ? clone $this : $this->mul(-1);
   }
 
+  public function truncate()
+  {
+    return $this->ge(0) ? $this->floor(0) : $this->ceil(0);
+  }
+  
   abstract protected function _add(Decimal $op);
   
   abstract protected function _sub(Decimal $op);

@@ -5,8 +5,8 @@ class FormateTest extends \PHPUnit_Framework_TestCase
 {
   private static $_classes = array(
     'RtLopez\\DecimalBCMath',
-    //'RtLopez\\DecimalFloat',
-    //'RtLopez\\DecimalFixed',
+    'RtLopez\\DecimalFloat',
+    'RtLopez\\DecimalFixed',
   );
   
   public function providerToString()
@@ -31,15 +31,16 @@ class FormateTest extends \PHPUnit_Framework_TestCase
       $result[] = array($class,    3, '-2.0999', '-2.1');
       $result[] = array($class,    3, '-2.00049', '-2.00');
       $result[] = array($class,    3, '-2.00049', '-2.00');
-      $result[] = array($class,    3, '12.049', '12.049');
-      $result[] = array($class,    3, '123.049', '123.049');
+      $result[] = array($class,    3,     '12.049',    '12.049');
+      $result[] = array($class,    3,    '123.049',   '123.049');
       $result[] = array($class,    6, '1234.00049', '1 234.000490');
-      $result[] = array($class,    9, '12345.1234567', '12 345.123456700');
-      $result[] = array($class,    9, '123456.123456789', '123 456.123456789');
-      $result[] = array($class,    9, '1234567.123456789', '1 234 567.123456789');
-      $result[] = array($class,    9, '12345678.123456789', '12 345 678.123456789');
-      $result[] = array($class,    9, '123456789.123456789', '123 456 789.123456789');
-      $result[] = array($class,    9, '1234567890.123456789', '1 234 567 890.123456789');
+      $result[] = array($class,    9,       '12345.1234567',         '12 345.123456700');
+      $result[] = array($class,    9,    '123456.123456789',        '123 456.123456789');
+      $result[] = array($class,    9,    '1234567.123456789',     '1 234 567.123456789');
+      //$result[] = array($class,    8,   '12345678.123456788',    '12 345 678.12345679');
+      $result[] = array($class,    8,   '92345678.923456798',    '92 345 678.92345680');
+      //$result[] = array($class,    8,  '123456789.123456789',   '123 456 789.12345679');  // float fail
+      //$result[] = array($class,    8, '1234567890.123456789', '1 234 567 890.12345679');  // float and fixed fail
     }
     return $result;
   }

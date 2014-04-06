@@ -6,127 +6,91 @@ namespace RtLopez;
  * @author rtlopez
  */
 class DecimalFloat extends Decimal
-{
-  public function __construct($value = 0, $prec = null)
-  {
-    parent::__construct($value, $prec);
-    $this->value = $this->_normalize($value);
-  }
-    
-  public function __toString()
+{ 
+  public function toString()
   {
     return $this->_trim(sprintf('%.' . $this->prec . 'f', $this->value));
   }
 
-  public function add($op)
+  protected function _add(Decimal $op)
   {
-    $result = clone $this;
-    $op = $this->_normalize($op);
-    $result->value = round($this->value + $op, $this->prec);
-    return $result;
+    return $this->value + $op->value;
   }
 
-  public function sub($op)
+  protected function _sub(Decimal $op)
   {
-    $result = clone $this;
-    $op = $this->_normalize($op);
-    $result->value = round($this->value - $op, $this->prec);
-    return $result;
+   return $this->value - $op->value;
   }
 
-  public function mul($op)
+  protected function _mul(Decimal $op)
   {
-    $result = clone $this;
-    $op = $this->_normalize($op);
-    $result->value = round($this->value * $op, $this->prec);
-    return $result;
+    return $this->value * $op->value;
   }
 
-  public function div($op)
+  protected function _div(Decimal $op)
   {
-    $result = clone $this;
-    $result->value = 0.0;
-    if($result->eq($op)) throw new ArithmeticException('Division by zero');
-    $op = $this->_normalize($op);
-    $result->value = round($this->value / $op, $this->prec);
-    return $result;
+    return $this->value / $op->value;
   }
 
-  public function mod($op)
+  protected function _mod(Decimal $op)
   {
-    $result = clone $this;
-    $result->value = 0.0;
-    if($result->eq($op)) throw new ArithmeticException('Division by zero');
-    $op = $this->_normalize($op);
-    $result->value = round($this->value % $op, $this->prec);
-    return $result;
+    return $this->value % $op->value;
   }
 
-  public function pow($op)
+  protected function _pow(Decimal $op)
   {
-    $result = clone $this;
-    $result->value = 0.0;
-    //if($result->gt($op)) throw new ArithmeticException('Exponent must be greather or equal zero: ' . json_encode($op));
-    $op = $this->_normalize($op);
-    $result->value = pow($this->value, round($op, $this->prec));
-    return $result;
+    return pow($this->value, $op->value);
   }
 
-  public function sqrt()
+  protected function _sqrt()
   {
-    $result = clone $this;
-    $result->value = round(sqrt($this->value), $this->prec);
-    return $result;
+    return sqrt($this->value);
   }
   
-  public function round($prec = 0)
+  protected function _round($number, $prec = 0)
   {
-    $result = clone $this;
-    $result->value = round($this->value, $prec);
-    return $result;
+    return round($number, $prec);
   }
 
-  public function ceil($prec = 0)
+  protected function _ceil($number, $prec = 0)
   {
-    $result = clone $this;
-    $scale = pow(10, -$prec);
-    $result->value = ceil($this->value / $scale) * $scale;
-    return $result;
+    $scale = pow(10, $prec);
+    return ceil($number * $scale) / $scale;
   }
 
-  public function floor($prec = 0)
+  protected function _floor($number, $prec = 0)
   {
-    $result = clone $this;
-    $scale = pow(10, -$prec);
-    $result->value = floor($this->value / $scale) * $scale;
-    return $result;
+    $scale = pow(10, $prec);
+    return floor($number * $scale) / $scale;
   }
   
-  public function eq($op)
+  protected function _eq(Decimal $op)
   {
-    $op = $this->_normalize($op);
-    return abs($this->value - round($op, $this->prec)) < $this->_epsilon();
+    return abs($this->value - $op->value) < $this->_epsilon();
   }
   
-  public function lt($op)
+  protected function _lt(Decimal $op)
   {
-    $op = $this->_normalize($op);
-    return $this->value < round($op, $this->prec);
+    return $this->value < $op->value;
   }
 
-  public function gt($op)
+  protected function _gt(Decimal $op)
   {
-    $op = $this->_normalize($op);
-    return $this->value > round($op, $this->prec);
+    return $this->value > $op->value;
   }
   
-  private function _epsilon()
+  protected function _epsilon()
   {
     return 0.5 / pow(10, $this->prec);
   }
-  
-  private function _normalize($op)
+
+  protected function _fix($value)
   {
-    return $op instanceof self ? $op->value : round((string)$op, $this->prec);
+    return $this->_round($value, $this->prec);
+  }
+  
+  protected function _normalize($op)
+  {
+    return $this->_fix($op instanceof $this ? $op->value : (string)$op);
   }
 }

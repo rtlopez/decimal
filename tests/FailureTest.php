@@ -5,8 +5,8 @@ class FailureTest extends \PHPUnit_Framework_TestCase
 {
   private static $_classes = array(
     'RtLopez\\DecimalBCMath',
-    //'RtLopez\\DecimalFloat',
-    //'RtLopez\\DecimalFixed',
+    'RtLopez\\DecimalFloat',
+    'RtLopez\\DecimalFixed',
   );
 
   public function providerClasses()
@@ -47,15 +47,5 @@ class FailureTest extends \PHPUnit_Framework_TestCase
   {
     $foo = new $class(1, 1);
     $foo->div(new $class(0, 1)); 
-  }
-
-  /**
-   * @dataProvider providerClasses
-   * @expectedException  RtLopez\ArithmeticException
-   */
-  public function testPowExponentFraction($class)
-  {
-    $foo = new $class(1, 1);
-    $foo->pow(1.5); 
   }
 }

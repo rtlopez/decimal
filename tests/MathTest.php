@@ -5,8 +5,8 @@ class MathTest extends \PHPUnit_Framework_TestCase
 {
   private static $_classes = array(
     'RtLopez\\DecimalBCMath',
-    //'RtLopez\\DecimalFloat',
-    //'RtLopez\\DecimalFixed',
+    'RtLopez\\DecimalFloat',
+    'RtLopez\\DecimalFixed',
   );
   
   public function providerAddIntegers()
@@ -180,13 +180,16 @@ class MathTest extends \PHPUnit_Framework_TestCase
     $result = array();
     foreach(self::$_classes as $class)
     {
+      $result[] = array($class,     0,     1,   '0');
       $result[] = array($class,     5,     2,   '1');
       $result[] = array($class,     5,     5,   '0');
       $result[] = array($class,    -7,     3,  '-1');
       $result[] = array($class,    -7,    -2,  '-1');
       $result[] = array($class,     9,    -4,   '1');
-      $result[] = array($class, '23.45',   4,   '3');
+      $result[] = array($class,  '23.45',  4,   '3');
       $result[] = array($class, '-23.75',  4,  '-3');
+      $result[] = array($class,     9,   4.5,   '1');
+      $result[] = array($class,    -8,  -3.5,  '-2');
     }
     return $result;
   }
@@ -220,8 +223,9 @@ class MathTest extends \PHPUnit_Framework_TestCase
       $result[] = array($class,    -5,     3, '-125');
       $result[] = array($class,    -7,     2,   '49');
       $result[] = array($class, '3.3',     3, '35.937');
-      //$result[] = array($class,     6,    -1,   '0.1667');
-      //$result[] = array($class,     9,    -2,   '0.0123');
+      $result[] = array($class,     6,    -1,   '0.1667');
+      $result[] = array($class,     9,    -2,   '0.0123');
+      $result[] = array($class,     3,   2.7,    '9');
     }
     return $result;
   }
@@ -236,7 +240,7 @@ class MathTest extends \PHPUnit_Framework_TestCase
     $res1 = $l->pow($r);
     $res2 = $l->pow($rhs);
   
-    $this->assertEquals($exp, sprintf('%.4f',(pow($lhs, $rhs))));
+    $this->assertEquals($exp, sprintf('%.4f',(pow($lhs, (int)$rhs))));
     $this->assertEquals($exp, ''.$res1);
     $this->assertEquals($exp, ''.$res2);
   }

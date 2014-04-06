@@ -5,8 +5,8 @@ class RoundTest extends \PHPUnit_Framework_TestCase
 {
   private static $_classes = array(
     'RtLopez\\DecimalBCMath',
-    //'RtLopez\\DecimalFloat',
-    //'RtLopez\\DecimalFixed',
+    'RtLopez\\DecimalFloat',
+    'RtLopez\\DecimalFixed',
   );
   
   public function providerRoundConstruct()
@@ -151,6 +151,32 @@ class RoundTest extends \PHPUnit_Framework_TestCase
   {
     $num = new $class($val, 8);
     $res = $num->ceil($prec);
+    $this->assertEquals($exp, (string)$res);
+  }
+
+  public function providerTruncate()
+  {
+    $result = array();
+    foreach(self::$_classes as $class)
+    {
+      $result[] = array($class,      '0',    '0');
+      $result[] = array($class,      '2',    '2');
+      $result[] = array($class,     '-4',   '-4');
+      $result[] = array($class,    '3.3',    '3');
+      $result[] = array($class,    '3.8',    '3');
+      $result[] = array($class,  '-5.12',   '-5');
+      $result[] = array($class,  '-5.99',   '-5');
+    }
+    return $result;
+  }
+  
+  /**
+   * @dataProvider providerTruncate
+   */
+  public function testTruncate($class, $val, $exp)
+  {
+    $num = new $class($val, 4);
+    $res = $num->truncate();
     $this->assertEquals($exp, (string)$res);
   }
 }

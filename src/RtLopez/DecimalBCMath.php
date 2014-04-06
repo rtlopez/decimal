@@ -39,7 +39,7 @@ class DecimalBCMath extends Decimal
 
   protected function _pow(Decimal $op)
   {
-    return bcpow($this->value, (int)$op->value, $this->prec + 1);
+    return bcpow($this->value, $op->value, $this->prec + 1);
   }
 
   protected function _sqrt()
@@ -109,6 +109,6 @@ class DecimalBCMath extends Decimal
   
   protected function _normalize($op)
   {
-    return $op instanceof self ? $op->value : $this->_round((string)$op, $this->prec);
+    return $this->_fix($op instanceof $this ? $op->value : (string)$op);
   }
 }
