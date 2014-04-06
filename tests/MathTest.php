@@ -244,4 +244,56 @@ class MathTest extends \PHPUnit_Framework_TestCase
     $this->assertEquals($exp, ''.$res1);
     $this->assertEquals($exp, ''.$res2);
   }
+  
+  public function providerClasses()
+  {
+    $result = array();
+    foreach(self::$_classes as $class)
+    {
+      $result[] = array($class);
+    }
+    return $result;
+  }
+  
+  /**
+   * @dataProvider providerClasses
+   */
+  public function testSqrt($class)
+  {
+    $num = new $class(25, 2);
+    $this->assertEquals(5, ''.$num->sqrt());
+    
+    $num = new $class(100, 4);
+    $this->assertEquals(10, ''.$num->sqrt());
+
+    $num = new $class(750, 4);
+    $this->assertEquals('27.3861', ''.$num->sqrt());
+  }
+  
+  /**
+   * @dataProvider providerClasses
+   */
+  public function testAbs($class)
+  {
+    $num = new $class(25, 2);
+    $this->assertEquals(25, ''.$num->abs());
+  
+    $num = new $class(-25.34, 4);
+    $this->assertEquals(25.34, ''.$num->abs());
+  }
+
+  /**
+   * @dataProvider providerClasses
+   */
+  public function testEpsilon($class)
+  {
+    $num = new $class(0, 0);
+    $this->assertEquals('0.5', ''.$num->epsilon());
+    
+    $num = new $class(0, 2);
+    $this->assertEquals('0.005', ''.$num->epsilon());
+    
+    $num = new $class(0, 4);
+    $this->assertEquals('0.00005', ''.$num->epsilon());
+  }
 }

@@ -53,4 +53,86 @@ class FormateTest extends \PHPUnit_Framework_TestCase
     $res = new $class($val, $prec);
     $this->assertEquals($exp, $res->format());
   }
+  
+  public function providerClasses()
+  {
+    $result = array();
+    foreach(self::$_classes as $class)
+    {
+      $result[] = array($class);
+    }
+    return $result;
+  }
+
+  /**
+   * @dataProvider providerClasses
+   */
+  public function testFormatNoParams($class)
+  {
+    $res = new $class('1234.5678', 4);
+    $this->assertEquals('1 234.5678', $res->format());
+  }
+
+  /**
+   * @dataProvider providerClasses
+   */
+  public function testFormatPrec($class)
+  {
+    $res = new $class('1234.5678', 4);
+    $this->assertEquals('1 234.57', $res->format(2));
+  }
+
+  /**
+   * @dataProvider providerClasses
+   */
+  public function testFormatDecPoint($class)
+  {
+    $res = new $class('1234.5678', 4);
+    $this->assertEquals('1 234,5678', $res->format(null, ','));
+  }
+  
+  /**
+   * @dataProvider providerClasses
+   */
+  public function testFormatEmptyThousands($class)
+  {
+    $res = new $class('1234.5678', 4);
+    $this->assertEquals('1234.5678', $res->format(null, '.', ''));
+  }
+
+  /**
+   * @dataProvider providerClasses
+   */
+  public function testFormatCommaThousands($class)
+  {
+    $res = new $class('1234.5678', 4);
+    $this->assertEquals('1,234.5678', $res->format(null, '.', ','));
+  }
+
+  /**
+   * @dataProvider providerClasses
+   */
+  public function testFormatDecimalAndThousands($class)
+  {
+    $res = new $class('1234.5678', 4);
+    $this->assertEquals('1--234--568', $res->format(3, '--', '--'));
+  }
+  
+  /**
+   * @dataProvider providerClasses
+   */
+  public function testFormatTrailingZero($class)
+  {
+    $res = new $class('1234.5', 4);
+    $this->assertEquals('1 234.500', $res->format(3));
+  }
+  
+  /**
+   * @dataProvider providerClasses
+   */
+  public function testFormatNoTrailingZero($class)
+  {
+    $res = new $class('1234', 4);
+    $this->assertEquals('1,234', $res->format(null, '.', ',', false));
+  }
 }

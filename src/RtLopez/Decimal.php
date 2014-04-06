@@ -18,6 +18,7 @@ abstract class Decimal
 
   public function __construct($value = 0, $prec = null)
   {
+    if($prec < 0 || self::$defaultPrecision < 0) throw new \RuntimeException('Precision can\'t be negative');
     if($value instanceof $this)
     {
       $this->prec = $prec !== null ? $prec : $value->prec;
@@ -33,7 +34,6 @@ abstract class Decimal
       $this->prec = $prec !== null ? $prec : self::$defaultPrecision;
       $this->value = $this->_normalize($value);
     }
-    if($this->prec < 0) throw new \RuntimeException('precision can not be negative');
   }
 
   /**
@@ -75,6 +75,7 @@ abstract class Decimal
 
   public static function setDefaultPrecision($precision)
   {
+    if($precision < 0) throw new \RuntimeException('Precision can\'t be negative');
     self::$defaultPrecision = $precision;
   }
   
@@ -91,7 +92,7 @@ abstract class Decimal
     return $this->toString();
   }
   
-  public function format($prec = null, $dec_point = '.' , $thousands_sep = ' ', $with_dec_zero = true)
+  public function format($prec = null, $dec_point = '.' , $thousands_sep = ' ', $trailing_zero = true)
   {
     $prec = $prec !== null ? $prec : $this->prec;
     $str = $this->round($prec)->toString();
@@ -113,13 +114,13 @@ abstract class Decimal
     $int_len = strlen($ints);
     $int_seps = (int)floor($int_len / 3);
     $int_total = $int_len + $int_seps;
-    $int_str = str_repeat($thousands_sep, $int_total);
+    $int_str = array();
     for($i = $int_len - 1, $j = $int_total - 1; $i >= 0; $j--, $i--)
     {
-      $c = $ints[$i];
-      $int_str[$j] = $c;
-      if(($int_len - $i) % 3 == 0) $j--;
+      array_unshift($int_str, $ints[$i]);
+      if(($int_len - $i) % 3 == 0) array_unshift($int_str, $thousands_sep);
     }
+    $int_str = implode('', $int_str);
     
     // format decimal part
     $dec_len = strlen($decs);
@@ -131,7 +132,7 @@ abstract class Decimal
     
     // connect all parts
     $number = $sign . trim($int_str . $dec_point . $dec_str);
-    if($with_dec_zero) return $number;
+    if($trailing_zero) return $number;
     
     return $this->_trim($number);
   }
@@ -266,14 +267,14 @@ abstract class Decimal
   
   public function epsilon()
   {
-    $half = $this->same('0.5', $this->prec);
-    $factor = $this->same('10', $this->prec)->pow($this->prec);
+    $half = $this->same('0.5', $this->prec + 1);
+    $factor = $this->same('10', 0)->pow($this->prec);
     return $half->div($factor);
   }
 
   public function abs()
   {
-    return $this->gt(0) ? clone $this : $this->mul(-1);
+    return $this->ge(0) ? clone $this : $this->mul(-1);
   }
 
   public function truncate()

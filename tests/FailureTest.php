@@ -48,4 +48,13 @@ class FailureTest extends \PHPUnit_Framework_TestCase
     $foo = new $class(1, 1);
     $foo->div(new $class(0, 1)); 
   }
+
+  /**
+   * @dataProvider providerClasses
+   * @expectedException  RuntimeException
+   */
+  public function testNegativePrecision($class)
+  {
+    new $class(0, -1);
+  }
 }
