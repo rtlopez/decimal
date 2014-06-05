@@ -1,13 +1,17 @@
 <?php
 namespace RtLopez;
 
+/**
+ * Arbitrary precision arithmetic class
+ * @author rtlopez
+ */
 abstract class Decimal
 {
   private static $defaultImplementation = 'RtLopez\\DecimalBCMath';
-  private static $defaultPrecision = 8;
+  private static $defaultPrecision = 2;
   
   /**
-   * @var internal value
+   * @var mixed internal value
    */
   protected $value;
   
@@ -48,7 +52,7 @@ abstract class Decimal
   }
 
   /**
-   * Make the same type obkect
+   * Make the same type object
    * @param number $value
    * @param string $prec
    * @return \RtLopez\Decimal
@@ -100,7 +104,7 @@ abstract class Decimal
     // extract parts
     $parts = explode('.', $str);
     $ints = $parts[0];
-    $decs = ''. @$parts[1];
+    $decs = '' . @$parts[1];
     
     // extract sign
     $sign = '';
@@ -112,10 +116,8 @@ abstract class Decimal
     
     // format integer part
     $int_len = strlen($ints);
-    $int_seps = (int)floor($int_len / 3);
-    $int_total = $int_len + $int_seps;
     $int_str = array();
-    for($i = $int_len - 1, $j = $int_total - 1; $i >= 0; $j--, $i--)
+    for($i = $int_len - 1; $i >= 0; $i--)
     {
       array_unshift($int_str, $ints[$i]);
       if(($int_len - $i) % 3 == 0) array_unshift($int_str, $thousands_sep);
@@ -138,7 +140,7 @@ abstract class Decimal
   }
   
   /**
-   * remove trailing spaces
+   * Remove trailing spaces
    * @param string $str
    * @return string
    */
@@ -147,7 +149,12 @@ abstract class Decimal
     if(!strpos($str, '.')) return $str;
     return rtrim(rtrim($str, '0'), '.');
   }
-  
+
+  /**
+   * Add two numbers
+   * @param int|float|string|Decimal $op operand
+   * @return Decimal
+   */
   public function add($op)
   {
     $dst = clone $this;
@@ -155,6 +162,11 @@ abstract class Decimal
     return $dst;
   }
   
+  /**
+   * Substract two numbers
+   * @param int|float|string|Decimal $op operand
+   * @return Decimal
+   */
   public function sub($op)
   {
     $dst = clone $this;
@@ -162,6 +174,11 @@ abstract class Decimal
     return $dst;
   }
   
+  /**
+   * Multiply two numbers
+   * @param int|float|string|Decimal $op operand
+   * @return Decimal
+   */
   public function mul($op)
   {
     $dst = clone $this;
@@ -169,6 +186,11 @@ abstract class Decimal
     return $dst;
   }
   
+  /**
+   * Divide number by operand
+   * @param int|float|string|Decimal $op operand
+   * @return Decimal
+   */
   public function div($op)
   {
     $dst = clone $this;
@@ -178,6 +200,11 @@ abstract class Decimal
     return $dst;
   }
   
+  /**
+   * Module of division
+   * @param int|float|string|Decimal $op operand
+   * @return Decimal
+   */
   public function mod($op)
   {
     $dst = clone $this;
@@ -187,6 +214,12 @@ abstract class Decimal
     return $dst;
   }
   
+  /**
+   * Power of number
+   * @note operand will be truncated first (cutted to integer) 
+   * @param int|float|string|Decimal $op operand
+   * @return Decimal
+   */
   public function pow($op)
   {
     $dst = clone $this;
@@ -195,6 +228,11 @@ abstract class Decimal
     return $dst;
   }
   
+  /**
+   * Square of number
+   * @param int|float|string|Decimal $op operand
+   * @return Decimal
+   */
   public function sqrt()
   {
     $dst = clone $this;
@@ -202,6 +240,11 @@ abstract class Decimal
     return $dst;
   }
   
+  /**
+   * Round number with specific precision
+   * @param int|float|string|Decimal $op operand
+   * @return Decimal
+   */
   public function round($prec = 0)
   {
     $dst = clone $this;
@@ -209,6 +252,11 @@ abstract class Decimal
     return $dst;
   }
 
+  /**
+   * Ceil number with specific precision
+   * @param int|float|string|Decimal $op operand
+   * @return Decimal
+   */
   public function ceil($prec = 0)
   {
     $dst = clone $this;
@@ -216,6 +264,11 @@ abstract class Decimal
     return $dst;
   }
   
+  /**
+   * Floor number with specific precision
+   * @param int|float|string|Decimal $op operand
+   * @return Decimal
+   */
   public function floor($prec = 0)
   {
     $dst = clone $this;
@@ -223,48 +276,94 @@ abstract class Decimal
     return $dst;
   }
 
+  /**
+   * Check if both numbers are equal
+   * @param int|float|string|Decimal $op operand
+   * @return boolean
+   */
   public function eq($op)
   {
     return $this->_eq($this->same($op, $this->prec));
   }
   
+  /**
+   * Check if number is less than operand
+   * @param int|float|string|Decimal $op operand
+   * @return boolean
+   */
   public function lt($op)
   {
     return $this->_lt($this->same($op, $this->prec));
   }
   
+  /**
+   * Check if number is greater than operand
+   * @param int|float|string|Decimal $op operand
+   * @return boolean
+   */
   public function gt($op)
   {
     return $this->_gt($this->same($op, $this->prec));
   }
   
+  /**
+   * Find the minimum of two numbers
+   * @param int|float|string|Decimal $op operand
+   * @return Decimal
+   */
   public function min($op)
   {
     $op = $this->same($op, $this->prec);
     return $this->lt($op) ? clone $this : $op;
   }
   
+  /**
+   * Find the maximum of two numbers
+   * @param int|float|string|Decimal $op operand
+   * @return Decimal
+   */
   public function max($op)
   {
     $op = $this->same($op, $this->prec);
     return $this->gt($op) ? clone $this : $op;
   }
   
+  /**
+   * Check if two numbers are not equal
+   * @param int|float|string|Decimal $op operand
+   * @return boolean
+   */
   public function ne($op)
   {
     return !$this->eq($op);
   }
   
+  /**
+   * Check if number is greater or equal than operand
+   * @param int|float|string|Decimal $op operand
+   * @return boolean
+   */
   public function ge($op)
   {
     return !$this->lt($op);
   } 
 
+  /**
+   * Check if number is less or equal than operand
+   * @param int|float|string|Decimal $op operand
+   * @return Decimal
+   */
   public function le($op)
   {
     return !$this->gt($op);
   }
   
+  /**
+   * Calcualate epsilon for float comparision
+   * @note returned precision is greater by one than original
+   * @param int|float|string|Decimal $op operand
+   * @return Decimal
+   */
   public function epsilon()
   {
     $half = $this->same('0.5', $this->prec + 1);
@@ -272,11 +371,21 @@ abstract class Decimal
     return $half->div($factor);
   }
 
+  /**
+   * Absolute value of number
+   * @param int|float|string|Decimal $op operand
+   * @return Decimal
+   */
   public function abs()
   {
     return $this->ge(0) ? clone $this : $this->mul(-1);
   }
 
+  /**
+   * Truncate decimal part
+   * @param int|float|string|Decimal $op operand
+   * @return Decimal
+   */
   public function truncate()
   {
     return $this->ge(0) ? $this->floor(0) : $this->ceil(0);
