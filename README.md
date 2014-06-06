@@ -1,7 +1,7 @@
 Decimal
 =======
 
-Arbitrary precision arithmetic class for PHP (>5.3.3).
+An object oriented arbitrary precision arithmetic class for PHP (>5.3.3).
 
 Installation
 ------------
@@ -23,12 +23,22 @@ Features
 
 The `Decimal` class can be used for an arbitrary precision calculation. Main features are:
 
-* Immutable result of each operation
-* The same result precision
-* Safe for finance calculations
-* Fluent interface
-* Many unit test (more than 1100 tests and 3700 assertions)
-* Easy to use and install
+* Immutable result of each operation,
+* The same result precision,
+* Safe for finance calculations,
+* Fluent interface,
+* Many unit test (more than 1100 tests and 3700 assertions),
+* Easy to use and install,
+
+Why should I use it?
+--------------------
+
+The `Decimal` solve several inconveniences known in other solutions. 
+
+* `Float` is only an aproximation and have limited precision,
+* `Fixed-point` have limited size (64-bits on 64-bit system),
+* Pure `bcmath` cannot correctly round, only truncate,
+* `GMP` is not object-oriented
 
 Usage
 -----
@@ -102,7 +112,7 @@ echo $n->floor();    // 12346
 
 ### Implementations
 
-There are exists three implementations of this library.
+There are exists three internal implementations of this library.
 
 * `RtLopez\DecimalBCMath`: (default)based on bcmath library
 * `RtLopez\DecimalFixed`:  based on scaled integers
@@ -126,6 +136,11 @@ Issue reporting or feature request
 ----------------------------------
 
 Coming soon.
+
+TODO
+----
+
+* GMP implementation
 
 Donation
 --------

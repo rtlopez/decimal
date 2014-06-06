@@ -229,7 +229,7 @@ abstract class Decimal
   }
   
   /**
-   * Square of number
+   * Square root of number
    * @param int|float|string|Decimal $op operand
    * @return Decimal
    */
