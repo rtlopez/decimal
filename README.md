@@ -144,5 +144,5 @@ TODO
 
 Donation
 --------
-BTC: ...
-LTC: ...
+BTC: 1Lopez7yPtbyjfLGe892JfheDFJMMt43tW
+LTC: LV3G3sJxz9AYpDMYUp8e1LCmerFYxVY3ak
