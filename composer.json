@@ -1,5 +1,6 @@
 {
   "name": "rtlopez/decimal",
+  "type": "library",
   "description": "An object oriented immutable arbitrary-precision arithmetic library for PHP",
   "keywords": ["decimal", "big decimal", "bignum", "numbers", "financial", "large numbers", "numeric", "gmp", "bcmath", "immutable", "money"],
   "homepage": "https://github.com/rtlopez/decimal",
