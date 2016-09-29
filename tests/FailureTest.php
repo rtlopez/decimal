@@ -75,4 +75,13 @@ class FailureTest extends \PHPUnit_Framework_TestCase
   {
     new $class('notnumber', 2);
   }
+
+  /**
+   * @dataProvider providerClasses
+   * @expectedException RtLopez\ConversionException
+   */
+  public function testNullValue($class)
+  {
+    new $class(null, 2);
+  }
 }
