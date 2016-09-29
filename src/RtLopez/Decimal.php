@@ -22,7 +22,7 @@ abstract class Decimal
 
   public function __construct($value = 0, $prec = null)
   {
-    if($prec < 0 || self::$defaultPrecision < 0) throw new \RuntimeException('Precision can\'t be negative');
+    if($prec < 0 || self::$defaultPrecision < 0) throw new \RuntimeException('Precision cannot be negative');
     if($value instanceof $this)
     {
       $this->prec = $prec !== null ? $prec : $value->prec;
@@ -35,6 +35,7 @@ abstract class Decimal
     }
     else
     {
+      if(!is_numeric($value)) throw new ConversionException('Value must be numeric');
       $this->prec = $prec !== null ? $prec : self::$defaultPrecision;
       $this->value = $this->_normalize($value);
     }
