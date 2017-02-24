@@ -109,6 +109,7 @@ class DecimalBCMath extends Decimal
   
   protected function _normalize($op)
   {
+    if(is_string($op) && stripos($op, 'e') !== false) $op = sprintf('%.18f', (float)$op); // scientific notation string
     return $this->_fix($op instanceof $this ? $op->value : (string)$op);
   }
 }

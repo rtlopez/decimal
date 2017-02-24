@@ -41,6 +41,7 @@ class FormateTest extends \PHPUnit_Framework_TestCase
       $result[] = array($class,    8,   '92345678.923456798',    '92 345 678.92345680');
       //$result[] = array($class,    8,  '123456789.123456789',   '123 456 789.12345679');  // float fail
       //$result[] = array($class,    8, '1234567890.123456789', '1 234 567 890.12345679');  // float and fixed fail
+      $result[] = array($class,    8, '1.23456789e+9', '1 234 567 890.00000000');  // scientific notation
     }
     return $result;
   }
