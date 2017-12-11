@@ -105,7 +105,7 @@ abstract class Decimal
     // extract parts
     $parts = explode('.', $str);
     $ints = $parts[0];
-    $decs = '' . @$parts[1];
+    $decs = empty($parts[1]) ? '' : '' . $parts[1];
     
     // extract sign
     $sign = '';
