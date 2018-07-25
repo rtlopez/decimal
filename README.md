@@ -107,7 +107,7 @@ echo $n->round(2);   // 12345.67
 echo $n->round(1);   // 12345.7
 echo $n->truncate(); // 12345
 echo $n->ceil(1);    // 12345.6
-echo $n->floor();    // 12346
+echo $n->floor();    // 12345
 ```
 
 ### Implementations
