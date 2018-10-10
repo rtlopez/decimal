@@ -352,7 +352,7 @@ abstract class Decimal
   /**
    * Check if number is less or equal than operand
    * @param int|float|string|Decimal $op operand
-   * @return Decimal
+   * @return boolean
    */
   public function le($op)
   {
