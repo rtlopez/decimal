@@ -9,6 +9,8 @@ abstract class Decimal
 {
   private static $defaultImplementation = 'RtLopez\\DecimalBCMath';
   private static $defaultPrecision = 2;
+  private static $defaultDecPoint = '.';
+  private static $defaultThousandsSep = ' ';
   
   /**
    * @var mixed internal value
@@ -88,6 +90,22 @@ abstract class Decimal
   {
     return self::$defaultPrecision;
   }
+  
+  public static function setDefaultDecimalPoint($dec_point) {
+    self::$defaultDecPoint = $dec_point;
+  }
+  
+  public static function getDefaultDecimalPoint() {
+    return self::$defaultDecPoint;
+  }
+  
+  public static function setDefaultThousandsSeparator($thousands_sep) {
+    self::$defaultThousandsSep = $thousands_sep;
+  }
+  
+  public static function getDefaultThousandsSeparator() {
+    return self::$defaultThousandsSep;
+  }
 
   /**
    * convert object to string
@@ -97,8 +115,16 @@ abstract class Decimal
     return $this->toString();
   }
   
-  public function format($prec = null, $dec_point = '.' , $thousands_sep = ' ', $trailing_zero = true)
+  public function format($prec = null, $dec_point = null , $thousands_sep = null, $trailing_zero = true)
   {
+    if ($dec_point === null) {
+        $dec_point = self::getDefaultDecimalPoint();
+    }
+    
+    if ($thousands_sep === null) {
+        $thousands_sep = self::getDefaultThousandsSeparator();
+    }
+      
     $prec = $prec !== null ? $prec : $this->prec;
     $str = $this->round($prec)->toString();
     
@@ -134,7 +160,7 @@ abstract class Decimal
     }
     
     // connect all parts
-    $number = $sign . trim($int_str . $dec_point . $dec_str);
+    $number = $sign . trim($int_str . $dec_point . $dec_str, " $dec_point$thousands_sep");
     if($trailing_zero) return $number;
     
     return $this->_trim($number);
