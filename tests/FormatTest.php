@@ -109,6 +109,15 @@ class FormateTest extends \PHPUnit_Framework_TestCase
     $res = new $class('1234.5678', 4);
     $this->assertEquals('1,234.5678', $res->format(null, '.', ','));
   }
+  
+  /**
+   * @dataProvider providerClasses
+   */
+  public function testFormatWithoutCommaThousands($class)
+  {
+    $res = new $class('234.5678', 4);
+    $this->assertEquals('234.5678', $res->format(null, '.', ','));
+  }
 
   /**
    * @dataProvider providerClasses
