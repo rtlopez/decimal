@@ -13,7 +13,7 @@ To add this package as a local, per-project dependency to your project, simply a
 ```json
 {
   "require": {
-    "rtlopez/decimal": "dev-master"
+    "rtlopez/decimal": "^1.0"
   }
 }
 ```
