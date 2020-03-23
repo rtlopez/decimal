@@ -3,6 +3,8 @@ Decimal
 
 An object oriented arbitrary precision arithmetic class for PHP (>5.3.3).
 
+![test](https://github.com/rtlopez/decimal/workflows/test/badge.svg)
+
 Installation
 ------------
 
