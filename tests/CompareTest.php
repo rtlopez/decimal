@@ -1,5 +1,5 @@
 <?php
-namespace RtLopez;
+namespace Tests\RtLopez;
 
 class CompareTest extends \PHPUnit_Framework_TestCase
 {

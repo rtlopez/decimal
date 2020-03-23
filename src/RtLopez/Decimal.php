@@ -22,6 +22,10 @@ abstract class Decimal
    */
   protected $prec;
 
+  /**
+   * @param mixed $value
+   * @param int $prec
+   */
   public function __construct($value = 0, $prec = null)
   {
     if($prec < 0 || self::$defaultPrecision < 0) throw new \RuntimeException('Precision cannot be negative');
@@ -45,8 +49,8 @@ abstract class Decimal
 
   /**
    * Decimal factory method 
-   * @param number $value
-   * @param string $prec
+   * @param mixed $value
+   * @param int $prec
    * @return \RtLopez\Decimal
    */
   public static function create($value = 0, $prec = null)
@@ -56,8 +60,8 @@ abstract class Decimal
 
   /**
    * Make the same type object
-   * @param number $value
-   * @param string $prec
+   * @param mixed $value
+   * @param int $prec
    * @return \RtLopez\Decimal
    */
   public function same($value = 0, $prec = null)
@@ -91,19 +95,23 @@ abstract class Decimal
     return self::$defaultPrecision;
   }
   
-  public static function setDefaultDecimalPoint($dec_point) {
+  public static function setDefaultDecimalPoint($dec_point)
+  {
     self::$defaultDecPoint = $dec_point;
   }
   
-  public static function getDefaultDecimalPoint() {
+  public static function getDefaultDecimalPoint()
+  {
     return self::$defaultDecPoint;
   }
   
-  public static function setDefaultThousandsSeparator($thousands_sep) {
+  public static function setDefaultThousandsSeparator($thousands_sep)
+  {
     self::$defaultThousandsSep = $thousands_sep;
   }
   
-  public static function getDefaultThousandsSeparator() {
+  public static function getDefaultThousandsSeparator()
+  {
     return self::$defaultThousandsSep;
   }
 
@@ -265,7 +273,6 @@ abstract class Decimal
   
   /**
    * Square root of number
-   * @param int|float|string|Decimal $op operand
    * @return Decimal
    */
   public function sqrt()
@@ -277,7 +284,7 @@ abstract class Decimal
   
   /**
    * Round number with specific precision
-   * @param int|float|string|Decimal $op operand
+   * @param int $prec precision
    * @return Decimal
    */
   public function round($prec = 0)
@@ -289,7 +296,7 @@ abstract class Decimal
 
   /**
    * Ceil number with specific precision
-   * @param int|float|string|Decimal $op operand
+   * @param int $prec precision
    * @return Decimal
    */
   public function ceil($prec = 0)
@@ -301,7 +308,7 @@ abstract class Decimal
   
   /**
    * Floor number with specific precision
-   * @param int|float|string|Decimal $op operand
+   * @param int $prec precision
    * @return Decimal
    */
   public function floor($prec = 0)
@@ -396,7 +403,6 @@ abstract class Decimal
   /**
    * Calcualate epsilon for float comparision
    * @note returned precision is greater by one than original
-   * @param int|float|string|Decimal $op operand
    * @return Decimal
    */
   public function epsilon()
@@ -408,7 +414,6 @@ abstract class Decimal
 
   /**
    * Absolute value of number
-   * @param int|float|string|Decimal $op operand
    * @return Decimal
    */
   public function abs()
@@ -418,7 +423,6 @@ abstract class Decimal
 
   /**
    * Truncate decimal part
-   * @param int|float|string|Decimal $op operand
    * @return Decimal
    */
   public function truncate()

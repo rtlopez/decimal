@@ -1,5 +1,5 @@
 <?php
-namespace RtLopez;
+namespace Tests\RtLopez;
 
 class FailureTest extends \PHPUnit_Framework_TestCase
 {

@@ -15,14 +15,21 @@
     "ext-bcmath": "*"
   },
   "require-dev": {
-     "phpunit/phpunit": "^4.0"
+    "phpunit/phpunit": "^4.0",
+    "phpstan/phpstan": "^0.12.18"
   },
   "scripts": {
-     "test": "vendor/bin/phpunit"
+     "test": "vendor/bin/phpunit",
+     "analyze": "vendor/bin/phpstan analyze"
   },
   "autoload": {
-    "psr-0": {
-      "RtLopez\\": "src/"
+    "psr-4": {
+      "RtLopez\\": "src/RtLopez/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\RtLopez\\": "tests/"
     }
   }
 }

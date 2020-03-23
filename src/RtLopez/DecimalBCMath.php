@@ -78,7 +78,7 @@ class DecimalBCMath extends Decimal
     {
       $tmp = bcadd($number, '0', $prec);
       if(bccomp($number, $tmp, $this->prec) == 0) return $tmp;
-      $fix = bcdiv('1', pow(10, $prec), $prec);
+      $fix = bcdiv('1', (string)pow(10, $prec), $prec);
       return bcadd($number, $fix, $prec);
     }
     else
@@ -97,7 +97,7 @@ class DecimalBCMath extends Decimal
     {
       $tmp = bcsub($number, '0', $prec);
       if(bccomp($number, $tmp, $this->prec) == 0) return $tmp;
-      $fix = bcdiv('1', pow(10, $prec), $prec);
+      $fix = bcdiv('1', (string)pow(10, $prec), $prec);
       return bcsub($number, $fix, $prec);
     }
   }

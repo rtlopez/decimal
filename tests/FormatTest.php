@@ -1,7 +1,7 @@
 <?php
-namespace RtLopez;
+namespace Tests\RtLopez;
 
-class FormateTest extends \PHPUnit_Framework_TestCase
+class FormatTest extends \PHPUnit_Framework_TestCase
 {
   private static $_classes = array(
     'RtLopez\\DecimalBCMath',

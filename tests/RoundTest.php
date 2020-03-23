@@ -1,5 +1,5 @@
 <?php
-namespace RtLopez;
+namespace Tests\RtLopez;
 
 class RoundTest extends \PHPUnit_Framework_TestCase
 {
