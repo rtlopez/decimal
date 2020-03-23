@@ -150,6 +150,7 @@ abstract class Decimal
       if(($int_len - $i) % 3 == 0) array_unshift($int_str, $thousands_sep);
     }
     $int_str = implode('', $int_str);
+    $int_str = trim($int_str, $thousands_sep);
     
     // format decimal part
     $dec_len = strlen($decs);
@@ -158,9 +159,16 @@ abstract class Decimal
     {
       $dec_str[$i] = $decs[$i];
     }
-    
+
+    // don't display "-0" nor "-0.0"
+    if($sign === '-' && $int_str === '0' && $dec_str == 0)
+    {
+      $sign = '';
+    }
+
     // connect all parts
-    $number = $sign . trim($int_str . $dec_point . $dec_str, " $dec_point$thousands_sep");
+    $number = $sign . $int_str . $dec_point . $dec_str;
+
     if($trailing_zero) return $number;
     
     return $this->_trim($number);
