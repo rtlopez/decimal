@@ -1,7 +1,7 @@
 <?php
 namespace Tests\RtLopez;
 
-class ImmutableTest extends \PHPUnit_Framework_TestCase
+class ImmutableTest extends \PHPUnit\Framework\TestCase
 {
   private static $_classes = array(
     'RtLopez\\DecimalBCMath',

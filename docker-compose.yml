@@ -1,0 +1,35 @@
+version: '3.5'
+
+services:
+    php-56: &php-base
+        image: jtreminio/php-cli:5.6
+        environment:
+            HOME: /tmp
+            COMPOSER_HOME: /tmp/.composer
+        working_dir: /app
+        volumes:
+            - '.:/app'
+
+    php-70:
+        << : *php-base
+        image: jtreminio/php-cli:7.0
+
+    php-71:
+        << : *php-base
+        image: jtreminio/php-cli:7.1
+
+    php-72:
+        << : *php-base
+        image: jtreminio/php-cli:7.2
+
+    php-73:
+        << : *php-base
+        image: jtreminio/php-cli:7.3
+
+    php-74:
+        << : *php-base
+        image: jtreminio/php-cli:7.4
+
+    php-80:
+        << : *php-base
+        image: jtreminio/php-cli:8.0

@@ -1,7 +1,11 @@
 <?php
+
 namespace Tests\RtLopez;
 
-class FailureTest extends \PHPUnit_Framework_TestCase
+use RtLopez\ArithmeticException;
+use RtLopez\ConversionException;
+
+class FailureTest extends \PHPUnit\Framework\TestCase
 {
   private static $_classes = array(
     'RtLopez\\DecimalBCMath',
@@ -12,76 +16,75 @@ class FailureTest extends \PHPUnit_Framework_TestCase
   public function providerClasses()
   {
     $result = array();
-    foreach(self::$_classes as $class)
-    {
+    foreach (self::$_classes as $class) {
       $result[] = array($class);
     }
     return $result;
   }
-  
+
   /**
    * @dataProvider providerClasses
-   * @expectedException  RtLopez\ArithmeticException
    */
   public function testDivisionByZeroInteger($class)
   {
+    $this->expectException(ArithmeticException::class);
     $foo = new $class(1, 1);
-    $foo->div(0); 
+    $foo->div(0);
   }
 
   /**
    * @dataProvider providerClasses
-   * @expectedException  RtLopez\ArithmeticException
    */
   public function testDivisionByZeroFloat($class)
   {
+    $this->expectException(ArithmeticException::class);
     $foo = new $class(1, 1);
-    $foo->div(0.0); 
+    $foo->div(0.0);
   }
 
   /**
    * @dataProvider providerClasses
-   * @expectedException  RtLopez\ArithmeticException
    */
   public function testDivisionByZeroDecimal($class)
   {
+    $this->expectException(ArithmeticException::class);
     $foo = new $class(1, 1);
-    $foo->div(new $class(0, 1)); 
+    $foo->div(new $class(0, 1));
   }
 
   /**
    * @dataProvider providerClasses
-   * @expectedException  RuntimeException
    */
   public function testNegativePrecision($class)
   {
+    $this->expectException(\RuntimeException::class);
     new $class(0, -1);
   }
 
   /**
    * @dataProvider providerClasses
-   * @expectedException RtLopez\ConversionException
    */
   public function testEmptyValue($class)
   {
+    $this->expectException(ConversionException::class);
     new $class('', 2);
   }
 
   /**
    * @dataProvider providerClasses
-   * @expectedException RtLopez\ConversionException
    */
   public function testWrongValue($class)
   {
+    $this->expectException(ConversionException::class);
     new $class('notnumber', 2);
   }
 
   /**
    * @dataProvider providerClasses
-   * @expectedException RtLopez\ConversionException
    */
   public function testNullValue($class)
   {
+    $this->expectException(ConversionException::class);
     new $class(null, 2);
   }
 }

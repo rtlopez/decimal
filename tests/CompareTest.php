@@ -1,7 +1,7 @@
 <?php
 namespace Tests\RtLopez;
 
-class CompareTest extends \PHPUnit_Framework_TestCase
+class CompareTest extends \PHPUnit\Framework\TestCase
 {
   private static $_classes = array(
     'RtLopez\\DecimalBCMath',

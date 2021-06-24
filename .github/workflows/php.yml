@@ -9,10 +9,23 @@ on:
 jobs:
   test:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        php: [ '7.2', '7.3', '7.4', '8.0' ]
+
+    name: PHP ${{ matrix.php }} test
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@master
+
+    - name: Setup PHP ${{ matrix.php }}
+      uses: nanasess/setup-php@master
+      with:
+        php-version: ${{ matrix.php }}
+
+    - name: Print php version
+      run: php --version
 
     - name: Validate composer.json and composer.lock
       run: composer validate
@@ -25,6 +38,3 @@ jobs:
 
     - name: Run static analysis
       run: composer run-script analyze
-
-    - name: Print php version
-      run: php --version
