@@ -1,7 +1,7 @@
 <?php
 namespace Tests\RtLopez;
 
-class RoundTest extends \PHPUnit_Framework_TestCase
+class RoundTest extends \PHPUnit\Framework\TestCase
 {
   private static $_classes = array(
     'RtLopez\\DecimalBCMath',
@@ -29,7 +29,7 @@ class RoundTest extends \PHPUnit_Framework_TestCase
       $result[] = array($class,    2, '-2.006',  '-2.01');
       $result[] = array($class,    2, '-2.009',  '-2.01');
       $result[] = array($class,    3, '-2.0999', '-2.1');
-      $result[] = array($class,    3, '-2.00049', '-2.00');
+      $result[] = array($class,    3, '-2.00049', '-2');
     }
     return $result;
   }

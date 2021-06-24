@@ -1,7 +1,7 @@
 <?php
 namespace Tests\RtLopez;
 
-class MathTest extends \PHPUnit_Framework_TestCase
+class MathTest extends \PHPUnit\Framework\TestCase
 {
   private static $_classes = array(
     'RtLopez\\DecimalBCMath',
@@ -169,8 +169,8 @@ class MathTest extends \PHPUnit_Framework_TestCase
     $r = new $class($rhs, 2);
     $res1 = $l->div($r);
     $res2 = $l->div($rhs);
-  
-    $this->assertEquals($exp, sprintf('%.2f', $lhs / $rhs));
+
+    $this->assertEqualsWithDelta($exp, $lhs / $rhs, 0.005);
     $this->assertEquals($exp, ''.$res1);
     $this->assertEquals($exp, ''.$res2);
   }
@@ -240,7 +240,7 @@ class MathTest extends \PHPUnit_Framework_TestCase
     $res1 = $l->pow($r);
     $res2 = $l->pow($rhs);
   
-    $this->assertEquals($exp, sprintf('%.4f',(pow($lhs, (int)$rhs))));
+    $this->assertEqualsWithDelta($exp, pow($lhs, (int)$rhs), 0.001);
     $this->assertEquals($exp, ''.$res1);
     $this->assertEquals($exp, ''.$res2);
   }

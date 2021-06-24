@@ -4,3 +4,4 @@
 .settings
 .buildpath
 .*.swp
+.phpunit.result.cache
