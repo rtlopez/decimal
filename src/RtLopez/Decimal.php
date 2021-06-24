@@ -259,7 +259,7 @@ abstract class Decimal
   
   /**
    * Power of number
-   * @note operand will be truncated first (cutted to integer) 
+   * note operand will be truncated first (cutted to integer) 
    * @param int|float|string|Decimal $op operand
    * @return Decimal
    */
@@ -402,7 +402,7 @@ abstract class Decimal
   
   /**
    * Calcualate epsilon for float comparision
-   * @note returned precision is greater by one than original
+   * note returned precision is greater by one than original
    * @return Decimal
    */
   public function epsilon()
