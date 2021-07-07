@@ -122,7 +122,12 @@ abstract class Decimal
   {
     return $this->toString();
   }
-  
+
+  public function toFloat()
+  {
+    return floatval($this->toString());
+  }
+
   public function format($prec = null, $dec_point = null , $thousands_sep = null, $trailing_zero = true)
   {
     if ($dec_point === null) {

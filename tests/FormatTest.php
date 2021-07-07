@@ -163,4 +163,14 @@ class FormatTest extends \PHPUnit\Framework\TestCase
     $res = new $class('-0.0001', 4);
     $this->assertSame('0.00', $res->format(2));
   }
+
+  /**
+   * @dataProvider providerClasses
+   */
+  public function testToFloat($class)
+  {
+    $res = new $class('1.2345', 4);
+    $this->assertInternalType('float', $res->toFloat());
+    $this->assertEquals(1.2345, $res->toFloat());
+  }
 }
